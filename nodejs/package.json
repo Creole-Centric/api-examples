@@ -1,0 +1,28 @@
+{
+  "name": "creolecentric-api-examples",
+  "version": "1.0.0",
+  "description": "CreoleCentric TTS API client examples for Node.js",
+  "main": "creolecentric-api.js",
+  "scripts": {
+    "start": "node creolecentric-api.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tts",
+    "text-to-speech",
+    "creole",
+    "haitian-creole",
+    "api",
+    "creolecentric"
+  ],
+  "author": "CreoleCentric",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
