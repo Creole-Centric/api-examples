@@ -109,8 +109,8 @@ class CreoleCentricAPI:
     
     # ============== TTS Jobs ==============
     
-    def create_tts_job(self, text: str, voice_id: str = "voice_1", 
-                      model_id: str = "model_1", **kwargs) -> Dict[str, Any]:
+    def create_tts_job(self, text: str, voice_id: str = "qW6MAd7f5iuYw7bAH96wC",
+                      model_id: str = "ccl_ht_v100", **kwargs) -> Dict[str, Any]:
         """
         Create a new TTS job.
         
@@ -212,7 +212,7 @@ class CreoleCentricAPI:
     
     # ============== Express TTS ==============
     
-    def express_tts(self, text: str, voice_id: str = "voice_1") -> bytes:
+    def express_tts(self, text: str, voice_id: str = "qW6MAd7f5iuYw7bAH96wC") -> bytes:
         """
         Use express TTS for immediate audio generation (shorter texts).
         
@@ -301,9 +301,11 @@ def main():
         text = "Bonjou! Mwen se yon egzanp API pou CreoleCentric. Mwen ka pale Kreyòl ayisyen."
         print(f"Text: {text}")
         
-        # Use first available voice
-        voice_id = voices[0]["voice_id"] if voices else "voice_1"
-        model_id = models[0]["model_id"] if models else "model_1"
+        # Use Nicolas Innocent voice and default Haitian Creole model
+        # To find voice IDs: Go to Voice Library page, click "More" (...) on any voice card
+        # To find model IDs: In TTS interface, go to Speech Options tab, click Model field
+        voice_id = voices[0]["voice_id"] if voices else "qW6MAd7f5iuYw7bAH96wC"  # Nicolas Innocent
+        model_id = models[0]["model_id"] if models else "ccl_ht_v100"  # Default Haitian Creole model
         
         job = client.create_tts_job(
             text=text,

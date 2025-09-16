@@ -61,8 +61,21 @@ Authorization: ApiKey cc_your_api_key_here
 ### API Key Format
 
 - Always starts with `cc_`
-- Example: `cc_abc123_def456789...`
+- Format: `cc_<key_id>_<secret>`
+- Example: `cc_AbCdEfGh-IjKlMnOp-QrStUvWx-YzAbCdEf_1234567890AbCdEf-GhIjKlMnOpQrStUv-WxYzAbCdEfGhIjKl-MnOpQrStUvWxYzAb`
 - Keep it secure and never share it publicly
+
+### Getting Voice and Model IDs
+
+#### Voice IDs
+1. Go to the [Voice Library](https://creolecentric.com/voices) page
+2. Click the "More" (⋮) button on any voice card
+3. The Voice ID will be displayed (e.g., `qW6MAd7f5iuYw7bAH96wC`)
+
+#### Model IDs
+1. In the TTS interface, go to the "Speech Options" tab
+2. Click on the Model field to open the Model Selection page
+3. Each model displays its ID (e.g., `ccl_ht_v100` for the default Haitian Creole model)
 
 ## 💻 Examples
 
@@ -86,8 +99,8 @@ client = CreoleCentricAPI("cc_your_api_key_here")
 # Create a TTS job
 job = client.create_tts_job(
     text="Bonjou! Kijan ou ye?",
-    voice_id="voice_1",
-    model_id="model_1"
+    voice_id="qW6MAd7f5iuYw7bAH96wC",  # Nicolas Innocent voice
+    model_id="ccl_ht_v100"  # Default Haitian Creole model
 )
 
 # Wait for completion
@@ -122,8 +135,8 @@ const client = new CreoleCentricAPI('cc_your_api_key_here');
 // Create a TTS job
 const job = await client.createTTSJob(
     'Bonjou! Kijan ou ye?',
-    'voice_1',
-    'model_1'
+    'qW6MAd7f5iuYw7bAH96wC',  // Nicolas Innocent voice
+    'ccl_ht_v100'  // Default Haitian Creole model
 );
 
 // Wait for completion
@@ -151,9 +164,28 @@ curl -X POST "https://creolecentric.com/api/v1/tts/jobs/" \
   -H "Content-Type: application/json" \
   -d '{
     "text": "Bonjou! Kijan ou ye?",
-    "voice_id": "voice_1",
-    "model_id": "model_1"
+    "voice_id": "qW6MAd7f5iuYw7bAH96wC",
+    "model_id": "ccl_ht_v100"
   }'
+```
+
+### Complete Examples
+
+The `examples/` directory contains ready-to-run scripts:
+
+#### Polling Examples
+- **[tts_job_with_polling.sh](examples/tts_job_with_polling.sh)** - Create a job and poll for completion
+- **[check_job_status.sh](examples/check_job_status.sh)** - Check status of an existing job
+
+#### Webhook Examples
+- **[tts_job_with_webhook.sh](examples/tts_job_with_webhook.sh)** - Create a job with webhook notifications
+- **[webhook_server.py](examples/webhook_server.py)** - Python webhook receiver server (Flask)
+- **[webhook_server.js](examples/webhook_server.js)** - Node.js webhook receiver server (Express)
+
+Run any example:
+```bash
+chmod +x examples/tts_job_with_polling.sh
+./examples/tts_job_with_polling.sh
 ```
 
 ## 📡 API Endpoints
@@ -318,7 +350,7 @@ Include a `webhook_url` when creating a job:
    curl -X POST "https://creolecentric.com/api/v1/tts/jobs/" \
      -H "Authorization: ApiKey cc_your_api_key" \
      -H "Content-Type: application/json" \
-     -d '{"text": "Test", "voice_id": "voice_1", "model_id": "model_1"}'
+     -d '{"text": "Test", "voice_id": "qW6MAd7f5iuYw7bAH96wC", "model_id": "ccl_ht_v100"}'
    ```
 
 ## 📖 Additional Resources
