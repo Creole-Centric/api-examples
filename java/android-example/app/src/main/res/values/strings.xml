@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CreoleCentric TTS</string>
+    <string name="enter_haitian_creole_text">Enter Haitian Creole text…</string>
+    <string name="generate_speech">Generate Speech</string>
+    <string name="play_audio">Play</string>
+    <string name="pause_audio">Pause</string>
+</resources>
