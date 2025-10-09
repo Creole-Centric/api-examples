@@ -5,6 +5,7 @@ A lightweight, self-contained JavaScript widget that adds Haitian Creole text-to
 ## Features
 
 - ⚡ **Zero Dependencies** - Single JavaScript file, no frameworks required
+- 🔌 **Real-time Updates** - WebSocket for instant notifications (polling fallback)
 - 💾 **Smart Caching** - Audio automatically cached in browser for 7 days
 - 🎨 **Customizable** - Light/dark themes and configurable options
 - 📱 **Mobile Ready** - Responsive design works on all devices
@@ -85,9 +86,26 @@ For more control, initialize the widget programmatically:
 1. **Text Input** - User enters Haitian Creole text
 2. **Generate** - Click "Generate & Play" button
 3. **API Call** - Widget submits TTS job to CreoleCentric API
-4. **Polling** - Automatically polls for job completion
-5. **Download** - Audio file downloaded and cached locally
-6. **Playback** - Audio plays automatically with built-in controls
+4. **Real-time Updates** - WebSocket connection for instant job status updates
+5. **Fallback Polling** - If WebSocket fails, polls every 30 seconds (up to 3 minutes)
+6. **Download** - Audio file downloaded and cached locally
+7. **Playback** - Audio plays automatically with built-in controls
+
+### Job Status Updates
+
+The widget uses a two-tier approach for maximum reliability:
+
+**Primary Method: WebSocket**
+- Connects to `wss://ws.creolecentric.com`
+- Receives real-time job status updates
+- Instant notification when audio is ready
+- Automatic reconnection handling
+
+**Fallback Method: Polling**
+- Activates if WebSocket connection fails
+- Checks job status every 30 seconds
+- Maximum wait time: 3 minutes (6 attempts)
+- Ensures delivery even with network restrictions
 
 ### Caching Behavior
 
@@ -124,6 +142,7 @@ Works on all modern browsers:
 - JavaScript enabled
 - localStorage support
 - Fetch API support
+- WebSocket support (polling fallback available)
 
 ## Troubleshooting
 

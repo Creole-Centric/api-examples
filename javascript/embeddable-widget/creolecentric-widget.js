@@ -4,9 +4,14 @@
  * A simple, embeddable text-to-speech widget for Haitian Creole.
  * Features:
  * - Text input with play button
- * - Local storage caching of generated audio
+ * - Real-time updates via WebSocket (with polling fallback)
+ * - Local storage caching of generated audio (7-day expiration)
  * - Automatic cache invalidation on text change
- * - Customizable styling
+ * - Customizable styling (light/dark themes)
+ *
+ * Job Status Updates:
+ * - Primary: WebSocket for real-time notifications
+ * - Fallback: Polling every 30 seconds for up to 3 minutes
  *
  * Usage:
  * <div id="creolecentric-tts"></div>
@@ -27,6 +32,7 @@
   const CreoleCentricWidget = {
     config: {
       apiBaseUrl: 'https://creolecentric.com/api/v1',
+      wsUrl: 'wss://ws.creolecentric.com',
       containerId: 'creolecentric-tts',
       apiKey: '',
       voiceId: 'i4mRPwKM2yHwXhbmkN514',
@@ -34,6 +40,9 @@
       placeholder: 'Ekri tèks ou an kreyòl Ayisyen...',
       theme: 'light'
     },
+
+    websocket: null,
+    activeJobId: null,
 
     init: function(options) {
       this.config = Object.assign({}, this.config, options);
@@ -299,10 +308,17 @@
         }
 
         const job = await jobResponse.json();
+        this.activeJobId = job.id;
         this.setStatus('Processing...', 'info');
 
-        // Poll for completion
-        const audioUrl = await this.pollJobStatus(job.id);
+        // Try WebSocket first, fall back to polling
+        let audioUrl;
+        try {
+          audioUrl = await this.waitForJobWithWebSocket(job.id);
+        } catch (wsError) {
+          console.warn('WebSocket failed, falling back to polling:', wsError);
+          audioUrl = await this.pollJobStatus(job.id);
+        }
 
         // Download and cache audio
         await this.downloadAndCacheAudio(text, audioUrl);
@@ -315,12 +331,78 @@
         this.setStatus(`Error: ${error.message}`, 'error');
       } finally {
         this.setLoading(false);
+        this.activeJobId = null;
+        this.closeWebSocket();
       }
     },
 
-    async pollJobStatus(jobId, maxAttempts = 60) {
+    async waitForJobWithWebSocket(jobId) {
+      return new Promise((resolve, reject) => {
+        const wsUrl = `${this.config.wsUrl}/?token=${this.config.apiKey}`;
+
+        try {
+          this.websocket = new WebSocket(wsUrl);
+
+          // Set timeout for WebSocket connection (3 minutes)
+          const wsTimeout = setTimeout(() => {
+            reject(new Error('WebSocket timeout'));
+          }, 180000);
+
+          this.websocket.onopen = () => {
+            console.log('WebSocket connected');
+            // Subscribe to job updates
+            this.websocket.send(JSON.stringify({
+              action: 'subscribe',
+              job_id: jobId
+            }));
+          };
+
+          this.websocket.onmessage = (event) => {
+            try {
+              const data = JSON.parse(event.data);
+
+              if (data.job_id === jobId) {
+                if (data.status === 'completed' || data.status === 'delivered') {
+                  clearTimeout(wsTimeout);
+                  resolve(data.audio_url);
+                } else if (data.status === 'failed') {
+                  clearTimeout(wsTimeout);
+                  reject(new Error(data.error || 'Job failed'));
+                }
+              }
+            } catch (error) {
+              console.error('Error parsing WebSocket message:', error);
+            }
+          };
+
+          this.websocket.onerror = (error) => {
+            clearTimeout(wsTimeout);
+            reject(new Error('WebSocket connection error'));
+          };
+
+          this.websocket.onclose = () => {
+            clearTimeout(wsTimeout);
+          };
+
+        } catch (error) {
+          reject(error);
+        }
+      });
+    },
+
+    closeWebSocket() {
+      if (this.websocket) {
+        this.websocket.close();
+        this.websocket = null;
+      }
+    },
+
+    async pollJobStatus(jobId) {
+      const maxAttempts = 6; // 6 attempts × 30 seconds = 3 minutes
+      const pollInterval = 30000; // 30 seconds
+
       for (let i = 0; i < maxAttempts; i++) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
 
         const response = await fetch(`${this.config.apiBaseUrl}/tts/jobs/${jobId}/`, {
           headers: {
