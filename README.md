@@ -24,7 +24,7 @@ python creolecentric_api.py
 
 ### Node.js
 ```bash
-cd nodejs
+cd javascript/nodejs-example
 npm install
 export CREOLECENTRIC_API_KEY='cc_your_key_here'
 node creolecentric-api.js
