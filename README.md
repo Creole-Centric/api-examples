@@ -4,6 +4,7 @@ This repository contains example client code for the CreoleCentric Text-to-Speec
 
 ## Available Examples
 
+- ✅ **Embeddable Widget** - Drop-in JavaScript widget for websites (zero dependencies)
 - ✅ **Python** - Complete example using `requests` library
 - ✅ **JavaScript (Node.js)** - Complete example using `axios`
 - ✅ **TypeScript** - Fully typed example with interfaces
@@ -13,6 +14,21 @@ This repository contains example client code for the CreoleCentric Text-to-Speec
 - ✅ **C#/.NET** - .NET 6.0+ implementation with ASP.NET Core, Blazor, MAUI & Xamarin examples
 
 ## Quick Start
+
+### Embeddable Widget
+Want to add TTS to your website? Just copy and paste:
+
+```html
+<!-- Add this div where you want the widget -->
+<div id="creolecentric-tts"
+     data-cc-widget
+     data-api-key="cc_your_key_here"></div>
+
+<!-- Include the widget script -->
+<script src="embeddable-widget/creolecentric-widget.js"></script>
+```
+
+See [embeddable-widget/README.md](embeddable-widget/README.md) for full documentation and [demo.html](embeddable-widget/demo.html) for a live demo.
 
 ### Python
 ```bash
