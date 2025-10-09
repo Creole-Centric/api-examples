@@ -25,10 +25,10 @@ Want to add TTS to your website? Just copy and paste:
      data-api-key="cc_your_key_here"></div>
 
 <!-- Include the widget script -->
-<script src="embeddable-widget/creolecentric-widget.js"></script>
+<script src="javascript/embeddable-widget/creolecentric-widget.js"></script>
 ```
 
-See [embeddable-widget/README.md](embeddable-widget/README.md) for full documentation and [demo.html](embeddable-widget/demo.html) for a live demo.
+See [javascript/embeddable-widget/README.md](javascript/embeddable-widget/README.md) for full documentation and [demo.html](javascript/embeddable-widget/demo.html) for a live demo.
 
 ### Python
 ```bash
