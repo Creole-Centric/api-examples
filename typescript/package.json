@@ -1,0 +1,30 @@
+{
+  "name": "creolecentric-api-typescript-example",
+  "version": "1.0.0",
+  "description": "TypeScript example for CreoleCentric TTS API",
+  "main": "creolecentric-api.ts",
+  "scripts": {
+    "start": "ts-node creolecentric-api.ts",
+    "build": "tsc",
+    "test": "ts-node creolecentric-api.ts"
+  },
+  "keywords": [
+    "creolecentric",
+    "tts",
+    "text-to-speech",
+    "haitian-creole",
+    "api",
+    "typescript"
+  ],
+  "author": "CreoleCentric Labs",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "ts-node": "^10.9.2"
+  }
+}

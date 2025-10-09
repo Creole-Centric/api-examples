@@ -95,12 +95,27 @@ class CreoleCentricAPI:
     
     # ============== Voices & Models ==============
     
-    def get_voices(self) -> List[Dict[str, Any]]:
-        """Get list of available voices"""
+    def get_voices(self) -> Dict[str, Any]:
+        """Get list of available voices
+
+        Returns:
+            Dictionary containing:
+                - success: bool
+                - voices: list of voice dictionaries
+                - count: number of voices
+                - source: data source (infer or local)
+        """
         return self._make_request("GET", "/tts/voices/")
     
-    def get_models(self) -> List[Dict[str, Any]]:
-        """Get list of available TTS models"""
+    def get_models(self) -> Dict[str, Any]:
+        """Get list of available TTS models
+
+        Returns:
+            Dictionary containing:
+                - success: bool
+                - models: list of model dictionaries
+                - count: number of models
+        """
         return self._make_request("GET", "/tts/models/")
     
     def get_voice_settings(self) -> Dict[str, Any]:
@@ -201,10 +216,10 @@ class CreoleCentricAPI:
         
         while time.time() - start_time < timeout:
             status = self.get_job_status(job_id)
-            
-            if status.get("status") in ["completed", "failed", "cancelled"]:
+
+            if status.get("status") in ["completed", "delivered", "failed", "cancelled"]:
                 return status
-            
+
             print(f"Job {job_id} status: {status.get('status', 'unknown')}")
             time.sleep(poll_interval)
         
@@ -275,21 +290,23 @@ def main():
         print("=" * 50)
         print("3. Available Voices")
         print("=" * 50)
-        voices = client.get_voices()
-        print(f"Found {len(voices)} voices:")
+        voices_response = client.get_voices()
+        voices = voices_response.get('voices', [])
+        print(f"Found {voices_response.get('count', len(voices))} voices (source: {voices_response.get('source', 'unknown')}):")
         for voice in voices[:5]:  # Show first 5
             print(f"  - {voice.get('name')} (ID: {voice.get('voice_id')})")
-            print(f"    Language: {voice.get('language')}, Gender: {voice.get('gender')}")
+            print(f"    Region: {voice.get('region')}, Gender: {voice.get('gender')}")
         print()
         
         # 4. Get available models
         print("=" * 50)
         print("4. Available Models")
         print("=" * 50)
-        models = client.get_models()
-        print(f"Found {len(models)} models:")
+        models_response = client.get_models()
+        models = models_response.get('models', [])
+        print(f"Found {models_response.get('count', len(models))} models:")
         for model in models:
-            print(f"  - {model.get('name')} (ID: {model.get('model_id')})")
+            print(f"  - {model.get('display_name') or model.get('name')} (ID: {model.get('id')})")
             print(f"    Description: {model.get('description')}")
         print()
         
@@ -301,19 +318,27 @@ def main():
         text = "Bonjou! Mwen se yon egzanp API pou CreoleCentric. Mwen ka pale Kreyòl ayisyen."
         print(f"Text: {text}")
         
-        # Use Nicolas Innocent voice and default Haitian Creole model
+        # Use Xavier Bruneau voice and default Haitian Creole model
         # To find voice IDs: Go to Voice Library page, click "More" (...) on any voice card
         # To find model IDs: In TTS interface, go to Speech Options tab, click Model field
-        voice_id = voices[0]["voice_id"] if voices else "qW6MAd7f5iuYw7bAH96wC"  # Nicolas Innocent
-        model_id = models[0]["model_id"] if models else "ccl_ht_v100"  # Default Haitian Creole model
+
+        # Use a real voice ID - don't rely on voices list which may contain placeholders
+        voice_id = "i4mRPwKM2yHwXhbmkN514"  # Xavier Bruneau
+        model_id = "ccl_ht_v100"  # Default Haitian Creole model
+
+        # If you want to use a voice from the list, make sure it's not a placeholder
+        if voices and voices[0].get("voice_id") not in ["voice_1", "voice_2"]:
+            voice_id = voices[0]["voice_id"]
+        if models:
+            model_id = models[0]["id"]
         
         job = client.create_tts_job(
             text=text,
             voice_id=voice_id,
             model_id=model_id
         )
-        
-        job_id = job.get("job_id")
+
+        job_id = job.get("id")
         print(f"Job created successfully!")
         print(f"Job ID: {job_id}")
         print(f"Status: {job.get('status')}")
@@ -351,10 +376,14 @@ def main():
         
         for job in jobs.get("results", []):
             created = job.get("created_at", "")
-            print(f"  - Job {job.get('job_id')[:8]}...")
+            job_id = job.get('id')
+            job_id_display = job_id[:8] + "..." if job_id else "N/A"
+            print(f"  - Job {job_id_display}")
             print(f"    Created: {created}")
             print(f"    Status: {job.get('status')}")
-            print(f"    Text: {job.get('text', '')[:50]}...")
+            text_preview = job.get('text', '')
+            if text_preview:
+                print(f"    Text: {text_preview[:50]}{'...' if len(text_preview) > 50 else ''}")
         
     except Exception as e:
         print(f"Error: {e}")

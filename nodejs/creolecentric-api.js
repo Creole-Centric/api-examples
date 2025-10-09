@@ -82,14 +82,16 @@ class CreoleCentricAPI {
     
     /**
      * Get list of available voices
+     * @returns {Object} Response containing { success, voices, count, source }
      */
     async getVoices() {
         const response = await this.client.get('/tts/voices/');
         return response.data;
     }
-    
+
     /**
      * Get list of available TTS models
+     * @returns {Object} Response containing { success, models, count }
      */
     async getModels() {
         const response = await this.client.get('/tts/models/');
@@ -177,13 +179,13 @@ class CreoleCentricAPI {
         
         while (Date.now() - startTime < timeoutMs) {
             const status = await this.getJobStatus(jobId);
-            
-            if (['completed', 'failed', 'cancelled'].includes(status.status)) {
+
+            if (['completed', 'delivered', 'failed', 'cancelled'].includes(status.status)) {
                 return status;
             }
-            
+
             console.log(`Job ${jobId} status: ${status.status || 'unknown'}`);
-            
+
             // Wait before next poll
             await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
         }
@@ -274,27 +276,29 @@ async function main() {
         console.log('=' .repeat(50));
         console.log('3. Available Voices');
         console.log('=' .repeat(50));
-        
-        const voices = await client.getVoices();
-        console.log(`Found ${voices.length} voices:`);
-        
+
+        const voicesResponse = await client.getVoices();
+        const voices = voicesResponse.voices || [];
+        console.log(`Found ${voicesResponse.count || voices.length} voices (source: ${voicesResponse.source || 'unknown'}):`);
+
         // Show first 5 voices
         voices.slice(0, 5).forEach(voice => {
             console.log(`  - ${voice.name} (ID: ${voice.voice_id})`);
-            console.log(`    Language: ${voice.language}, Gender: ${voice.gender}`);
+            console.log(`    Region: ${voice.region}, Gender: ${voice.gender}`);
         });
         console.log();
-        
+
         // 4. Get available models
         console.log('=' .repeat(50));
         console.log('4. Available Models');
         console.log('=' .repeat(50));
-        
-        const models = await client.getModels();
-        console.log(`Found ${models.length} models:`);
-        
+
+        const modelsResponse = await client.getModels();
+        const models = modelsResponse.models || [];
+        console.log(`Found ${modelsResponse.count || models.length} models:`);
+
         models.forEach(model => {
-            console.log(`  - ${model.name} (ID: ${model.model_id})`);
+            console.log(`  - ${model.display_name || model.name} (ID: ${model.id})`);
             console.log(`    Description: ${model.description}`);
         });
         console.log();
@@ -307,9 +311,18 @@ async function main() {
         const text = "Bonjou! Mwen se yon egzanp API pou CreoleCentric. Mwen ka pale Kreyòl ayisyen.";
         console.log(`Text: ${text}`);
         
-        // Use first available voice and model
-        const voiceId = voices[0]?.voice_id || 'voice_1';
-        const modelId = models[0]?.model_id || 'model_1';
+        // Use Xavier Bruneau voice and default model
+        // Use a real voice ID - don't rely on voices list which may contain placeholders
+        let voiceId = 'i4mRPwKM2yHwXhbmkN514';  // Xavier Bruneau
+        let modelId = 'ccl_ht_v100';
+
+        // If you want to use a voice from the list, make sure it's not a placeholder
+        if (voices[0] && !['voice_1', 'voice_2'].includes(voices[0].voice_id)) {
+            voiceId = voices[0].voice_id;
+        }
+        if (models[0]) {
+            modelId = models[0].id;
+        }
         
         const job = await client.createTTSJob(text, voiceId, modelId, {
             // Optional parameters
@@ -317,7 +330,7 @@ async function main() {
             // pitch: 1.0
         });
         
-        const jobId = job.job_id;
+        const jobId = job.id;
         console.log('Job created successfully!');
         console.log(`Job ID: ${jobId}`);
         console.log(`Status: ${job.status}`);
@@ -362,10 +375,14 @@ async function main() {
         console.log(`Recent ${jobs.results?.length || 0} jobs:`);
         
         jobs.results?.forEach(job => {
-            console.log(`  - Job ${job.job_id.substring(0, 8)}...`);
+            const jobId = job.id || 'N/A';
+            const jobIdDisplay = jobId !== 'N/A' ? jobId.substring(0, 8) + '...' : jobId;
+            console.log(`  - Job ${jobIdDisplay}`);
             console.log(`    Created: ${job.created_at}`);
             console.log(`    Status: ${job.status}`);
-            console.log(`    Text: ${job.text?.substring(0, 50)}...`);
+            if (job.text) {
+                console.log(`    Text: ${job.text.substring(0, 50)}${job.text.length > 50 ? '...' : ''}`);
+            }
         });
         
         // 8. Express TTS (for short texts)

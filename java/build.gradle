@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.creolecentric'
+version = '1.0.0'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Gson for JSON serialization/deserialization
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+application {
+    mainClass = 'com.creolecentric.api.CreoleCentricAPI'
+}
+
+// Create a fat JAR with all dependencies
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.creolecentric.api.CreoleCentricAPI'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// Run task configuration
+run {
+    // Pass environment variables to the application
+    environment System.getenv()
+}

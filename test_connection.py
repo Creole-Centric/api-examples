@@ -87,15 +87,16 @@ def test_api_connection():
             headers=headers,
             timeout=10
         )
-        
+
         if response.status_code == 200:
-            voices = response.json()
-            print(f"   ✅ Found {len(voices)} voices")
+            data = response.json()
+            voices = data.get('voices', [])
+            print(f"   ✅ Found {data.get('count', len(voices))} voices (source: {data.get('source', 'unknown')})")
             if voices:
                 print(f"   First voice: {voices[0].get('name', 'unknown')}")
         else:
             print(f"   ⚠️  Could not fetch voices: {response.status_code}")
-            
+
     except Exception as e:
         print(f"   ⚠️  Voice endpoint error: {e}")
     
@@ -107,15 +108,18 @@ def test_api_connection():
             headers=headers,
             timeout=10
         )
-        
+
         if response.status_code == 200:
-            models = response.json()
-            print(f"   ✅ Found {len(models)} models")
+            data = response.json()
+            models = data.get('models', [])
+            print(f"   ✅ Found {data.get('count', len(models))} models")
             if models:
-                print(f"   First model: {models[0].get('name', 'unknown')}")
+                first_model = models[0]
+                model_name = first_model.get('display_name') or first_model.get('name', 'unknown')
+                print(f"   First model: {model_name} (ID: {first_model.get('id', 'unknown')})")
         else:
             print(f"   ⚠️  Could not fetch models: {response.status_code}")
-            
+
     except Exception as e:
         print(f"   ⚠️  Models endpoint error: {e}")
     
