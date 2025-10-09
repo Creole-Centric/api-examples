@@ -98,9 +98,9 @@ For full API documentation, visit: [https://creolecentric.com/docs](https://creo
 
 ## Support
 
-- Documentation: https://creolecentric.com/docs
-- GitHub Issues: [Report issues](https://github.com/Creole-Centric/api-examples/issues)
-- Email: support@creolecentric.com
+- **API Examples Issues**: [Report bugs or issues with these code examples](https://github.com/Creole-Centric/api-examples/issues)
+- **General Support**: For API questions, platform issues, or general help, email support@creolecentric.com
+- **Documentation**: https://creolecentric.com/docs
 
 ## License
 
