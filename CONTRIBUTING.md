@@ -162,6 +162,6 @@ Please be respectful and constructive in all interactions.
 
 ## Questions?
 
-Feel free to open an issue or contact us at dev@creolecentric.com
+Feel free to open an issue or contact us at develop@creolecentric.com
 
 Thank you for contributing! 🙏
