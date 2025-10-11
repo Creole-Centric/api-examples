@@ -76,7 +76,7 @@ export class CreoleCentricAPI {
 
   constructor(config: CreoleCentricConfig) {
     this.apiKey = config.apiKey;
-    this.baseUrl = config.baseUrl || 'https://creolecentric.com/api/v1';
+    this.baseUrl = config.baseUrl || 'https://api.creolecentric.com/v1';
   }
 
   private async makeRequest<T>(
