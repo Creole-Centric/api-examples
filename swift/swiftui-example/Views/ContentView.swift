@@ -104,20 +104,15 @@ struct ContentView: View {
                 let job = try await client.createTTSJob(request: request)
                 await MainActor.run {
                     currentJob = job
-                }
-
-                // Wait for completion
-                let completedJob = try await client.waitForJob(jobId: job.id)
-                await MainActor.run {
-                    currentJob = completedJob
                     isLoading = false
-
-                    // Setup audio player if available
-                    if let audioUrlString = completedJob.audioUrl,
-                       let audioUrl = URL(string: audioUrlString) {
-                        audioPlayer = AVPlayer(url: audioUrl)
-                    }
                 }
+
+                // Note: For production apps, integrate webhooks through your backend server
+                // to receive real-time status updates (tts_queued → tts_started →
+                // tts_synthesized → tts_uploaded → tts_delivered)
+                //
+                // For this example, you can manually check job status by calling:
+                // let status = try await client.getJobStatus(jobId: job.id)
             } catch {
                 await MainActor.run {
                     errorMessage = error.localizedDescription

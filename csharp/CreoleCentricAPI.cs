@@ -342,43 +342,6 @@ namespace CreoleCentric.Api
         }
 
         /// <summary>
-        /// Wait for a job to complete
-        /// </summary>
-        /// <param name="jobId">The job ID</param>
-        /// <param name="timeout">Maximum time to wait in seconds</param>
-        /// <param name="pollInterval">How often to check status in seconds</param>
-        /// <param name="cancellationToken">Cancellation token</param>
-        public async Task<JobStatusResponse> WaitForJobAsync(
-            string jobId,
-            int timeout = 300,
-            int pollInterval = 2,
-            CancellationToken cancellationToken = default)
-        {
-            var startTime = DateTime.UtcNow;
-            var timeoutSpan = TimeSpan.FromSeconds(timeout);
-            var pollIntervalSpan = TimeSpan.FromSeconds(pollInterval);
-
-            while (DateTime.UtcNow - startTime < timeoutSpan)
-            {
-                var status = await GetJobStatusAsync(jobId, cancellationToken);
-
-                if (status.Status == "completed" ||
-                    status.Status == "delivered" ||
-                    status.Status == "failed" ||
-                    status.Status == "cancelled")
-                {
-                    return status;
-                }
-
-                Console.WriteLine($"Job {jobId} status: {status.Status}");
-                await Task.Delay(pollIntervalSpan, cancellationToken);
-            }
-
-            throw new TimeoutException(
-                $"Job {jobId} did not complete within {timeout} seconds");
-        }
-
-        /// <summary>
         /// Get recent TTS jobs
         /// </summary>
         /// <param name="limit">Maximum number of jobs to return</param>
@@ -494,23 +457,12 @@ namespace CreoleCentric.Api
                 Console.WriteLine($"Job created: {job.Id}");
                 Console.WriteLine($"Status: {job.Status}");
                 Console.WriteLine();
-
-                // 6. Wait for Completion
-                Console.WriteLine("=== Waiting for Job Completion ===");
-                var finalStatus = await client.WaitForJobAsync(job.Id, 60, 2);
-                Console.WriteLine($"Job {finalStatus.Id} {finalStatus.Status}");
-
-                if (finalStatus.Status == "completed" || finalStatus.Status == "delivered")
-                {
-                    Console.WriteLine($"Audio URL: {finalStatus.AudioUrl}");
-                }
-                else if (finalStatus.Status == "failed")
-                {
-                    Console.WriteLine($"Error: {finalStatus.Error}");
-                }
+                Console.WriteLine("📢 To receive webhook notifications, add webhook_url to payload:");
+                Console.WriteLine("   Events: tts_queued → tts_started → tts_synthesized → tts_uploaded → tts_delivered");
+                Console.WriteLine("   See examples for webhook handling implementation");
                 Console.WriteLine();
 
-                // 7. Recent Jobs
+                // 6. Recent Jobs
                 Console.WriteLine("=== Recent Jobs ===");
                 var recentJobs = await client.GetRecentJobsAsync(5);
                 Console.WriteLine($"Found {recentJobs.Count} recent jobs:");

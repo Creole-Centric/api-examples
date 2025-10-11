@@ -105,10 +105,10 @@ All examples demonstrate:
 - ✅ Listing available voices
 - ✅ Listing available models
 - ✅ Creating TTS jobs
-- ✅ Webhook integration for real-time job updates (recommended)
+- ✅ Webhook integration for real-time job updates
 - ✅ Listing recent jobs
 
-**Note**: While some examples include polling as a fallback mechanism, webhooks are the recommended method for receiving job status updates in production applications.
+**Note**: The CreoleCentric API uses webhooks exclusively for job status updates. All examples demonstrate proper webhook integration for receiving real-time notifications when jobs complete.
 
 ## API Documentation
 

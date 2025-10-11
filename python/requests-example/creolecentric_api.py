@@ -196,35 +196,6 @@ class CreoleCentricAPI:
         """
         return self._make_request("POST", f"/tts/jobs/{job_id}/cancel/")
     
-    def wait_for_job(self, job_id: str, timeout: int = 300, 
-                    poll_interval: int = 2) -> Dict[str, Any]:
-        """
-        Wait for a job to complete.
-        
-        Args:
-            job_id: UUID of the job
-            timeout: Maximum time to wait in seconds
-            poll_interval: Time between status checks
-            
-        Returns:
-            Final job status
-            
-        Raises:
-            TimeoutError: If job doesn't complete within timeout
-        """
-        start_time = time.time()
-        
-        while time.time() - start_time < timeout:
-            status = self.get_job_status(job_id)
-
-            if status.get("status") in ["completed", "delivered", "failed", "cancelled"]:
-                return status
-
-            print(f"Job {job_id} status: {status.get('status', 'unknown')}")
-            time.sleep(poll_interval)
-        
-        raise TimeoutError(f"Job {job_id} did not complete within {timeout} seconds")
-    
     # ============== Express TTS ==============
     
     def express_tts(self, text: str, voice_id: str = "qW6MAd7f5iuYw7bAH96wC") -> bytes:
@@ -332,10 +303,12 @@ def main():
         if models:
             model_id = models[0]["id"]
         
+        # To use webhooks, add webhook_url parameter:
         job = client.create_tts_job(
             text=text,
             voice_id=voice_id,
-            model_id=model_id
+            model_id=model_id,
+            webhook_url="https://your-app.com/webhooks/tts"  # Your webhook endpoint
         )
 
         job_id = job.get("id")
@@ -344,31 +317,14 @@ def main():
         print(f"Status: {job.get('status')}")
         print(f"Credits used: {job.get('credits_used', 0)}")
         print()
-        
-        # 6. Wait for job completion
-        print("=" * 50)
-        print("6. Waiting for Job Completion")
-        print("=" * 50)
-        
-        if job_id:
-            try:
-                final_status = client.wait_for_job(job_id, timeout=60)
-                print(f"Job completed!")
-                print(f"Final status: {final_status.get('status')}")
-                
-                if final_status.get('audio_url'):
-                    print(f"Audio URL: {final_status.get('audio_url')}")
-                
-                if final_status.get('duration_seconds'):
-                    print(f"Duration: {final_status.get('duration_seconds')} seconds")
-                    
-            except TimeoutError as e:
-                print(f"Job timed out: {e}")
+        print("📢 Webhook notifications will be sent to your endpoint:")
+        print("   - tts_queued → tts_started → tts_synthesized → tts_uploaded → tts_delivered")
+        print(f"   See examples/webhook_server.py for webhook handling example")
         print()
-        
-        # 7. List recent jobs
+
+        # 6. List recent jobs
         print("=" * 50)
-        print("7. Recent Jobs")
+        print("6. Recent Jobs")
         print("=" * 50)
         
         jobs = client.list_jobs(limit=5)

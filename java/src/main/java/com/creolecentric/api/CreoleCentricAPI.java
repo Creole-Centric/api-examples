@@ -264,43 +264,6 @@ public class CreoleCentricAPI {
     }
 
     /**
-     * Wait for a job to complete
-     *
-     * @param jobId The job ID
-     * @param timeout Maximum time to wait in seconds
-     * @param pollInterval How often to check status in seconds
-     * @return The final job status
-     */
-    public JobStatusResponse waitForJob(String jobId, int timeout, int pollInterval) throws IOException, InterruptedException {
-        long startTime = System.currentTimeMillis();
-        long timeoutMs = timeout * 1000L;
-        long pollIntervalMs = pollInterval * 1000L;
-
-        while (System.currentTimeMillis() - startTime < timeoutMs) {
-            JobStatusResponse status = getJobStatus(jobId);
-
-            if ("completed".equals(status.status) ||
-                "delivered".equals(status.status) ||
-                "failed".equals(status.status) ||
-                "cancelled".equals(status.status)) {
-                return status;
-            }
-
-            System.out.println("Job " + jobId + " status: " + status.status);
-            Thread.sleep(pollIntervalMs);
-        }
-
-        throw new IOException("Job " + jobId + " did not complete within " + timeout + " seconds");
-    }
-
-    /**
-     * Wait for a job to complete with default timeout (300s) and poll interval (2s)
-     */
-    public JobStatusResponse waitForJob(String jobId) throws IOException, InterruptedException {
-        return waitForJob(jobId, 300, 2);
-    }
-
-    /**
      * Get recent TTS jobs
      *
      * @param limit Maximum number of jobs to return
@@ -392,20 +355,12 @@ public class CreoleCentricAPI {
             System.out.println("Job created: " + job.id);
             System.out.println("Status: " + job.status);
             System.out.println();
-
-            // 6. Wait for Completion
-            System.out.println("=== Waiting for Job Completion ===");
-            JobStatusResponse finalStatus = client.waitForJob(job.id, 60, 2);
-            System.out.println("Job " + finalStatus.id + " " + finalStatus.status);
-
-            if ("completed".equals(finalStatus.status) || "delivered".equals(finalStatus.status)) {
-                System.out.println("Audio URL: " + finalStatus.audioUrl);
-            } else if ("failed".equals(finalStatus.status)) {
-                System.out.println("Error: " + finalStatus.error);
-            }
+            System.out.println("📢 To receive webhook notifications, add webhook_url to payload:");
+            System.out.println("   Events: tts_queued → tts_started → tts_synthesized → tts_uploaded → tts_delivered");
+            System.out.println("   See examples for webhook handling implementation");
             System.out.println();
 
-            // 7. Recent Jobs
+            // 6. Recent Jobs
             System.out.println("=== Recent Jobs ===");
             RecentJobsResponse recentJobs = client.getRecentJobs(5);
             System.out.println("Found " + recentJobs.count + " recent jobs:");

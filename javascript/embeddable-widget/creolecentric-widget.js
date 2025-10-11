@@ -4,14 +4,13 @@
  * A simple, embeddable text-to-speech widget for Haitian Creole.
  * Features:
  * - Text input with play button
- * - Real-time updates via WebSocket (with polling fallback)
+ * - Real-time updates via WebSocket
  * - Local storage caching of generated audio (7-day expiration)
  * - Automatic cache invalidation on text change
  * - Customizable styling (light/dark themes)
  *
  * Job Status Updates:
- * - Primary: WebSocket for real-time notifications
- * - Fallback: Polling every 30 seconds for up to 3 minutes
+ * - WebSocket for real-time notifications
  *
  * Usage:
  * <div id="creolecentric-tts"></div>
@@ -311,14 +310,8 @@
         this.activeJobId = job.id;
         this.setStatus('Processing...', 'info');
 
-        // Try WebSocket first, fall back to polling
-        let audioUrl;
-        try {
-          audioUrl = await this.waitForJobWithWebSocket(job.id);
-        } catch (wsError) {
-          console.warn('WebSocket failed, falling back to polling:', wsError);
-          audioUrl = await this.pollJobStatus(job.id);
-        }
+        // Wait for job completion via WebSocket
+        const audioUrl = await this.waitForJobWithWebSocket(job.id);
 
         // Download and cache audio
         await this.downloadAndCacheAudio(text, audioUrl);
@@ -397,36 +390,6 @@
       }
     },
 
-    async pollJobStatus(jobId) {
-      const maxAttempts = 6; // 6 attempts × 30 seconds = 3 minutes
-      const pollInterval = 30000; // 30 seconds
-
-      for (let i = 0; i < maxAttempts; i++) {
-        await new Promise(resolve => setTimeout(resolve, pollInterval));
-
-        const response = await fetch(`${this.config.apiBaseUrl}/tts/jobs/${jobId}/`, {
-          headers: {
-            'Authorization': `ApiKey ${this.config.apiKey}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to check job status: ${response.status}`);
-        }
-
-        const status = await response.json();
-
-        if (status.status === 'completed' || status.status === 'delivered') {
-          return status.audio_url;
-        }
-
-        if (status.status === 'failed') {
-          throw new Error(status.error || 'Job failed');
-        }
-      }
-
-      throw new Error('Timeout waiting for audio generation');
-    },
 
     async downloadAndCacheAudio(text, audioUrl) {
       this.setStatus('Downloading audio...', 'info');

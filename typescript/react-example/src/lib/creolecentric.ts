@@ -183,42 +183,6 @@ export class CreoleCentricAPI {
     });
   }
 
-  /**
-   * Wait for a job to complete by polling the status endpoint
-   */
-  async waitForJob(
-    jobId: string,
-    options: {
-      timeout?: number; // milliseconds
-      pollInterval?: number; // milliseconds
-      onProgress?: (status: TTSJob) => void;
-    } = {}
-  ): Promise<TTSJob> {
-    const {
-      timeout = 300000, // 5 minutes default
-      pollInterval = 2000, // 2 seconds default
-      onProgress,
-    } = options;
-
-    const startTime = Date.now();
-
-    while (Date.now() - startTime < timeout) {
-      const status = await this.getJobStatus(jobId);
-
-      if (onProgress) {
-        onProgress(status);
-      }
-
-      if (['completed', 'delivered', 'failed', 'cancelled'].includes(status.status)) {
-        return status;
-      }
-
-      await new Promise(resolve => setTimeout(resolve, pollInterval));
-    }
-
-    throw new CreoleCentricAPIError(`Job ${jobId} did not complete within ${timeout}ms`);
-  }
-
   // ============== Express TTS ==============
 
   /**

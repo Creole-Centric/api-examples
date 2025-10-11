@@ -165,34 +165,7 @@ class CreoleCentricAPI {
         const response = await this.client.post(`/tts/jobs/${jobId}/cancel/`);
         return response.data;
     }
-    
-    /**
-     * Wait for a job to complete
-     * @param {string} jobId - UUID of the job
-     * @param {number} timeout - Maximum time to wait in seconds
-     * @param {number} pollInterval - Time between status checks in seconds
-     */
-    async waitForJob(jobId, timeout = 300, pollInterval = 2) {
-        const startTime = Date.now();
-        const timeoutMs = timeout * 1000;
-        const pollIntervalMs = pollInterval * 1000;
-        
-        while (Date.now() - startTime < timeoutMs) {
-            const status = await this.getJobStatus(jobId);
 
-            if (['completed', 'delivered', 'failed', 'cancelled'].includes(status.status)) {
-                return status;
-            }
-
-            console.log(`Job ${jobId} status: ${status.status || 'unknown'}`);
-
-            // Wait before next poll
-            await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
-        }
-        
-        throw new Error(`Job ${jobId} did not complete within ${timeout} seconds`);
-    }
-    
     /**
      * Download audio from a completed job
      * @param {string} audioUrl - URL of the audio file
@@ -323,52 +296,29 @@ async function main() {
         if (models[0]) {
             modelId = models[0].id;
         }
-        
+
+        // To use webhooks, add webhook_url parameter:
         const job = await client.createTTSJob(text, voiceId, modelId, {
-            // Optional parameters
+            webhook_url: 'https://your-app.com/webhooks/tts'  // Your webhook endpoint
+            // Optional parameters:
             // speed: 1.0,
             // pitch: 1.0
         });
-        
+
         const jobId = job.id;
         console.log('Job created successfully!');
         console.log(`Job ID: ${jobId}`);
         console.log(`Status: ${job.status}`);
         console.log(`Credits used: ${job.credits_used || 0}`);
         console.log();
-        
-        // 6. Wait for job completion
-        console.log('=' .repeat(50));
-        console.log('6. Waiting for Job Completion');
-        console.log('=' .repeat(50));
-        
-        if (jobId) {
-            try {
-                const finalStatus = await client.waitForJob(jobId, 60);
-                console.log('Job completed!');
-                console.log(`Final status: ${finalStatus.status}`);
-                
-                if (finalStatus.audio_url) {
-                    console.log(`Audio URL: ${finalStatus.audio_url}`);
-                    
-                    // Optional: Download the audio file
-                    // const outputPath = path.join(__dirname, `output_${jobId}.mp3`);
-                    // await client.downloadAudio(finalStatus.audio_url, outputPath);
-                    // console.log(`Audio saved to: ${outputPath}`);
-                }
-                
-                if (finalStatus.duration_seconds) {
-                    console.log(`Duration: ${finalStatus.duration_seconds} seconds`);
-                }
-            } catch (error) {
-                console.error(`Job timed out: ${error.message}`);
-            }
-        }
+        console.log('📢 Webhook notifications will be sent to your endpoint:');
+        console.log('   - tts_queued → tts_started → tts_synthesized → tts_uploaded → tts_delivered');
+        console.log('   See examples/webhook_server.js for webhook handling example');
         console.log();
-        
-        // 7. List recent jobs
+
+        // 6. List recent jobs
         console.log('=' .repeat(50));
-        console.log('7. Recent Jobs');
+        console.log('6. Recent Jobs');
         console.log('=' .repeat(50));
         
         const jobs = await client.listJobs(5);

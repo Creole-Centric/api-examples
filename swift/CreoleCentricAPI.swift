@@ -157,6 +157,7 @@ struct CreateJobRequest: Codable {
     let text: String
     let voiceId: String
     let modelId: String
+    let webhookUrl: String?
     let speed: Double?
     let stability: Double?
     let similarityBoost: Double?
@@ -167,6 +168,7 @@ struct CreateJobRequest: Codable {
         case text
         case voiceId = "voice_id"
         case modelId = "model_id"
+        case webhookUrl = "webhook_url"
         case speed, stability, style
         case similarityBoost = "similarity_boost"
         case useSpeakerBoost = "use_speaker_boost"
@@ -295,6 +297,7 @@ class CreoleCentricAPI {
             text: text,
             voiceId: voiceId,
             modelId: modelId,
+            webhookUrl: nil,
             speed: speed,
             stability: stability,
             similarityBoost: similarityBoost,
@@ -319,27 +322,6 @@ class CreoleCentricAPI {
 
     func cancelJob(jobId: String) async throws {
         let _: [String: String] = try await makeRequest(method: "POST", endpoint: "/tts/jobs/\(jobId)/cancel/")
-    }
-
-    func waitForJob(
-        jobId: String,
-        timeout: TimeInterval = 300,
-        pollInterval: TimeInterval = 2
-    ) async throws -> JobStatusResponse {
-        let startTime = Date()
-
-        while Date().timeIntervalSince(startTime) < timeout {
-            let status = try await getJobStatus(jobId: jobId)
-
-            if ["completed", "delivered", "failed", "cancelled"].contains(status.status) {
-                return status
-            }
-
-            print("Job \(jobId) status: \(status.status)")
-            try await Task.sleep(nanoseconds: UInt64(pollInterval * 1_000_000_000))
-        }
-
-        throw CreoleCentricError.timeout
     }
 
     // MARK: - Express TTS
@@ -456,32 +438,13 @@ struct CreoleCentricExample {
             print("Job ID: \(job.id)")
             print("Status: \(job.status)")
             print("Credits used: \(job.creditsUsed)\n")
+            print("📢 To receive webhook notifications, pass webhookUrl parameter to createTTSJob:")
+            print("   Events: tts_queued → tts_started → tts_synthesized → tts_uploaded → tts_delivered")
+            print("   See examples/webhook_server.swift for webhook handling example\n")
 
-            // 6. Wait for job completion
+            // 6. List recent jobs
             print(String(repeating: "=", count: 50))
-            print("6. Waiting for Job Completion")
-            print(String(repeating: "=", count: 50))
-
-            do {
-                let finalStatus = try await client.waitForJob(jobId: job.id, timeout: 60)
-                print("Job completed!")
-                print("Final status: \(finalStatus.status)")
-
-                if let audioUrl = finalStatus.audioUrl {
-                    print("Audio URL: \(audioUrl)")
-                }
-
-                if let duration = finalStatus.durationSeconds {
-                    print("Duration: \(duration) seconds")
-                }
-            } catch CreoleCentricError.timeout {
-                print("Job timed out")
-            }
-            print()
-
-            // 7. List recent jobs
-            print(String(repeating: "=", count: 50))
-            print("7. Recent Jobs")
+            print("6. Recent Jobs")
             print(String(repeating: "=", count: 50))
 
             let jobList = try await client.listJobs(limit: 5)

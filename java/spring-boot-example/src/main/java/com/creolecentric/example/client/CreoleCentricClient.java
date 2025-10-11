@@ -88,21 +88,4 @@ public class CreoleCentricClient {
         }
     }
 
-    public TTSJob waitForJob(String jobId, long timeoutMs, long pollIntervalMs) throws InterruptedException {
-        long startTime = System.currentTimeMillis();
-
-        while (System.currentTimeMillis() - startTime < timeoutMs) {
-            TTSJob job = getJobStatus(jobId);
-
-            if ("delivered".equals(job.getStatus()) ||
-                "failed".equals(job.getStatus()) ||
-                "cancelled".equals(job.getStatus())) {
-                return job;
-            }
-
-            Thread.sleep(pollIntervalMs);
-        }
-
-        throw new CreoleCentricException("Job " + jobId + " did not complete within " + timeoutMs + "ms");
-    }
 }

@@ -114,19 +114,4 @@ class CreoleCentricClient {
         }
     }
 
-    func waitForJob(jobId: String, timeout: TimeInterval = 300, pollInterval: TimeInterval = 2) async throws -> TTSJob {
-        let startTime = Date()
-
-        while Date().timeIntervalSince(startTime) < timeout {
-            let job = try await getJobStatus(jobId: jobId)
-
-            if ["delivered", "failed", "cancelled"].contains(job.status) {
-                return job
-            }
-
-            try await Task.sleep(nanoseconds: UInt64(pollInterval * 1_000_000_000))
-        }
-
-        throw CreoleCentricError.timeout
-    }
 }

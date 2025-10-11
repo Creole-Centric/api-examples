@@ -239,6 +239,7 @@ type CreateJobRequest struct {
 	Text               string  `json:"text"`
 	VoiceID            string  `json:"voice_id"`
 	ModelID            string  `json:"model_id"`
+	WebhookURL         string  `json:"webhook_url,omitempty"`
 	Speed              float64 `json:"speed,omitempty"`
 	Stability          float64 `json:"stability,omitempty"`
 	SimilarityBoost    float64 `json:"similarity_boost,omitempty"`
@@ -293,29 +294,6 @@ func (api *CreoleCentricAPI) ListJobs(limit int) (*JobListResponse, error) {
 	}
 
 	return &jobList, nil
-}
-
-func (api *CreoleCentricAPI) WaitForJob(jobID string, timeout, pollInterval int) (*JobStatusResponse, error) {
-	startTime := time.Now()
-	timeoutDuration := time.Duration(timeout) * time.Second
-	pollDuration := time.Duration(pollInterval) * time.Second
-
-	for time.Since(startTime) < timeoutDuration {
-		status, err := api.GetJobStatus(jobID)
-		if err != nil {
-			return nil, err
-		}
-
-		if status.Status == "completed" || status.Status == "delivered" ||
-		   status.Status == "failed" || status.Status == "cancelled" {
-			return status, nil
-		}
-
-		fmt.Printf("Job %s status: %s\n", jobID, status.Status)
-		time.Sleep(pollDuration)
-	}
-
-	return nil, fmt.Errorf("job %s did not complete within %d seconds", jobID, timeout)
 }
 
 // ============== Example Usage ==============
@@ -417,6 +395,7 @@ func main() {
 		modelID = modelsResp.Models[0].ID
 	}
 
+	// To use webhooks, modify CreateJobRequest to include webhook_url field
 	job, err := client.CreateTTSJob(text, voiceID, modelID)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -427,32 +406,14 @@ func main() {
 	fmt.Printf("Job ID: %s\n", job.ID)
 	fmt.Printf("Status: %s\n", job.Status)
 	fmt.Printf("Credits used: %d\n\n", job.CreditsUsed)
-
-	// 6. Wait for job completion
-	fmt.Println(strings.Repeat("=", 50))
-	fmt.Println("6. Waiting for Job Completion")
-	fmt.Println(strings.Repeat("=", 50))
-
-	if job.ID != "" {
-		finalStatus, err := client.WaitForJob(job.ID, 60, 2)
-		if err != nil {
-			fmt.Printf("Job timed out: %v\n", err)
-		} else {
-			fmt.Println("Job completed!")
-			fmt.Printf("Final status: %s\n", finalStatus.Status)
-			if finalStatus.AudioURL != "" {
-				fmt.Printf("Audio URL: %s\n", finalStatus.AudioURL)
-			}
-			if finalStatus.DurationSeconds > 0 {
-				fmt.Printf("Duration: %.2f seconds\n", finalStatus.DurationSeconds)
-			}
-		}
-	}
+	fmt.Println("📢 To receive webhook notifications, add webhook_url to CreateJobRequest:")
+	fmt.Println("   Events: tts_queued → tts_started → tts_synthesized → tts_uploaded → tts_delivered")
+	fmt.Println("   See examples/webhook_server.go for webhook handling example")
 	fmt.Println()
 
-	// 7. List recent jobs
+	// 6. List recent jobs
 	fmt.Println(strings.Repeat("=", 50))
-	fmt.Println("7. Recent Jobs")
+	fmt.Println("6. Recent Jobs")
 	fmt.Println(strings.Repeat("=", 50))
 
 	jobList, err := client.ListJobs(5)

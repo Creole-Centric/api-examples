@@ -64,22 +64,4 @@ public class CreoleCentricClient
             ?? throw new CreoleCentricException("Failed to deserialize response");
     }
 
-    public async Task<TTSJob> WaitForJobAsync(string jobId, int timeoutMs = 300000, int pollIntervalMs = 2000)
-    {
-        var startTime = DateTime.UtcNow;
-
-        while ((DateTime.UtcNow - startTime).TotalMilliseconds < timeoutMs)
-        {
-            var job = await GetJobStatusAsync(jobId);
-
-            if (job.Status == "delivered" || job.Status == "failed" || job.Status == "cancelled")
-            {
-                return job;
-            }
-
-            await Task.Delay(pollIntervalMs);
-        }
-
-        throw new CreoleCentricException($"Job {jobId} did not complete within {timeoutMs}ms");
-    }
 }

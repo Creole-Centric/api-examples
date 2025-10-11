@@ -121,7 +121,7 @@ curl -X GET "$BASE_URL/tts/voice-settings/" \
 
 ### 4. TTS Job Management
 
-#### Create a TTS Job
+#### Create a TTS Job with Webhook
 
 ```bash
 curl -X POST "$BASE_URL/tts/jobs/" \
@@ -131,10 +131,13 @@ curl -X POST "$BASE_URL/tts/jobs/" \
     "text": "Bonjou! Kijan ou ye jodi a?",
     "voice_id": "voice_1",
     "model_id": "model_1",
+    "webhook_url": "https://your-app.com/webhooks/tts",
     "speed": 1.0,
     "pitch": 1.0
   }'
 ```
+
+**Note**: The `webhook_url` parameter is required. You'll receive real-time notifications at this endpoint as your job progresses.
 
 **Response:**
 ```json
@@ -150,6 +153,8 @@ curl -X POST "$BASE_URL/tts/jobs/" \
 ```
 
 #### Get Job Status
+
+For historical records or debugging only. Use webhooks for real-time updates.
 
 ```bash
 curl -X GET "$BASE_URL/tts/jobs/{job_id}/status/" \
@@ -353,13 +358,13 @@ Rate limit information is included in response headers:
 
 ## Best Practices
 
-1. **Always check job status** before attempting to download audio
-2. **Implement exponential backoff** when polling for job status
-3. **Store job IDs** for tracking and future reference
-4. **Handle errors gracefully** with appropriate retry logic
-5. **Use webhooks** for production applications instead of polling
-6. **Batch small requests** to optimize credit usage
-7. **Cache voice and model lists** as they don't change frequently
+1. **Use webhooks exclusively** for job status updates - provide a `webhook_url` parameter when creating jobs
+2. **Store job IDs** for tracking and future reference
+3. **Handle errors gracefully** with appropriate retry logic
+4. **Batch small requests** to optimize credit usage
+5. **Cache voice and model lists** as they don't change frequently
+6. **Implement webhook signature verification** for security
+7. **Set up proper error handling** for webhook endpoint failures
 
 ## Testing
 
