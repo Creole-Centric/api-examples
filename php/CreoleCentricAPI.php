@@ -29,7 +29,7 @@ class CreoleCentricAPI
      * @param string $apiKey Your API key starting with 'cc_'
      * @param string $baseUrl Base URL for the API (default: production URL)
      */
-    public function __construct(string $apiKey, string $baseUrl = 'https://creolecentric.com/api/v1')
+    public function __construct(string $apiKey, string $baseUrl = 'https://api.creolecentric.com/v1')
     {
         $this->apiKey = $apiKey;
         $this->baseUrl = rtrim($baseUrl, '/');

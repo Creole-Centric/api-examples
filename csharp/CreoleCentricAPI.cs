@@ -193,7 +193,7 @@ namespace CreoleCentric.Api
         /// </summary>
         /// <param name="apiKey">Your CreoleCentric API key (starts with 'cc_')</param>
         public CreoleCentricAPI(string apiKey)
-            : this(apiKey, "https://creolecentric.com/api/v1")
+            : this(apiKey, "https://api.creolecentric.com/v1")
         {
         }
 

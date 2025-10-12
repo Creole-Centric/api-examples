@@ -128,7 +128,7 @@ class CreoleCentricAPI {
     private client: AxiosInstance;
     private baseURL: string;
 
-    constructor(apiKey: string, baseURL: string = 'https://creolecentric.com/api/v1') {
+    constructor(apiKey: string, baseURL: string = 'https://api.creolecentric.com/v1') {
         this.baseURL = baseURL;
         this.client = axios.create({
             baseURL: this.baseURL,

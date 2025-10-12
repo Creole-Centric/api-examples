@@ -2,7 +2,7 @@
 # Create a TTS Job
 
 API_KEY="${CREOLECENTRIC_API_KEY}"
-BASE_URL="https://creolecentric.com/api/v1"
+BASE_URL="https://api.creolecentric.com/v1"
 
 curl -X POST "${BASE_URL}/tts/jobs/" \
   -H "Authorization: ApiKey ${API_KEY}" \

@@ -48,7 +48,7 @@ This example demonstrates how to integrate the CreoleCentric Text-to-Speech API 
    FLASK_APP=app.py
    FLASK_ENV=development
    CREOLECENTRIC_API_KEY=cc_your_api_key_here
-   CREOLECENTRIC_API_URL=https://creolecentric.com/api/v1
+   CREOLECENTRIC_API_URL=https://api.creolecentric.com/v1
    ```
 
 5. **Run the development server**:
@@ -272,7 +272,7 @@ CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:5000"]
 FLASK_ENV=production
 SECRET_KEY=your-production-secret-key
 CREOLECENTRIC_API_KEY=cc_your_api_key_here
-CREOLECENTRIC_API_URL=https://creolecentric.com/api/v1
+CREOLECENTRIC_API_URL=https://api.creolecentric.com/v1
 ```
 
 ## Security Considerations

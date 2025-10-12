@@ -36,7 +36,7 @@ This example demonstrates how to integrate the CreoleCentric Text-to-Speech API 
    {
      "CreoleCentric": {
        "ApiKey": "cc_your_api_key_here",
-       "ApiUrl": "https://creolecentric.com/api/v1"
+       "ApiUrl": "https://api.creolecentric.com/v1"
      }
    }
    ```
@@ -44,7 +44,7 @@ This example demonstrates how to integrate the CreoleCentric Text-to-Speech API 
    Or use environment variables:
    ```bash
    export CreoleCentric__ApiKey=cc_your_api_key_here
-   export CreoleCentric__ApiUrl=https://creolecentric.com/api/v1
+   export CreoleCentric__ApiUrl=https://api.creolecentric.com/v1
    ```
 
 4. **Run the application**:
@@ -206,7 +206,7 @@ ENTRYPOINT ["dotnet", "CreoleCentricExample.dll"]
 docker build -t creolecentric-tts .
 docker run -p 5000:80 \
   -e CreoleCentric__ApiKey=your_key \
-  -e CreoleCentric__ApiUrl=https://creolecentric.com/api/v1 \
+  -e CreoleCentric__ApiUrl=https://api.creolecentric.com/v1 \
   creolecentric-tts
 ```
 
@@ -225,7 +225,7 @@ docker run -p 5000:80 \
   "AllowedHosts": "*",
   "CreoleCentric": {
     "ApiKey": "cc_your_api_key_here",
-    "ApiUrl": "https://creolecentric.com/api/v1"
+    "ApiUrl": "https://api.creolecentric.com/v1"
   }
 }
 ```

@@ -28,7 +28,7 @@ class CreoleCentricClient {
     private let baseUrl: String
     private let session: URLSession
 
-    init(apiKey: String? = nil, baseUrl: String = "https://creolecentric.com/api/v1") {
+    init(apiKey: String? = nil, baseUrl: String = "https://api.creolecentric.com/v1") {
         // Get API key from environment or parameter
         self.apiKey = apiKey
             ?? ProcessInfo.processInfo.environment["CREOLECENTRIC_API_KEY"]

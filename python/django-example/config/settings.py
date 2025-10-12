@@ -116,4 +116,4 @@ REST_FRAMEWORK = {
 
 # CreoleCentric API settings
 CREOLECENTRIC_API_KEY = os.getenv('CREOLECENTRIC_API_KEY')
-CREOLECENTRIC_API_URL = os.getenv('CREOLECENTRIC_API_URL', 'https://creolecentric.com/api/v1')
+CREOLECENTRIC_API_URL = os.getenv('CREOLECENTRIC_API_URL', 'https://api.creolecentric.com/v1')

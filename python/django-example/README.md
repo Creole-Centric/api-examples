@@ -48,7 +48,7 @@ This example demonstrates how to integrate the CreoleCentric Text-to-Speech API 
    SECRET_KEY=your-django-secret-key-here
    DEBUG=True
    CREOLECENTRIC_API_KEY=cc_your_api_key_here
-   CREOLECENTRIC_API_URL=https://creolecentric.com/api/v1
+   CREOLECENTRIC_API_URL=https://api.creolecentric.com/v1
    ```
 
 5. **Run migrations**:
@@ -376,7 +376,7 @@ DEBUG=False
 ALLOWED_HOSTS=your-domain.com,www.your-domain.com
 DATABASE_URL=postgresql://user:pass@localhost/dbname
 CREOLECENTRIC_API_KEY=cc_your_api_key_here
-CREOLECENTRIC_API_URL=https://creolecentric.com/api/v1
+CREOLECENTRIC_API_URL=https://api.creolecentric.com/v1
 ```
 
 ## Security Considerations

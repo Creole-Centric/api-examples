@@ -37,7 +37,7 @@ This example demonstrates how to integrate the CreoleCentric Text-to-Speech API 
    Edit `.env` and add your API credentials:
    ```env
    VITE_CREOLECENTRIC_API_KEY=cc_your_api_key_here
-   VITE_CREOLECENTRIC_API_URL=https://creolecentric.com/api/v1
+   VITE_CREOLECENTRIC_API_URL=https://api.creolecentric.com/v1
    ```
 
    **⚠️ Security Note**: This example uses environment variables prefixed with `VITE_` which makes them available in the browser. For production applications, consider using a backend proxy to keep your API key secure.

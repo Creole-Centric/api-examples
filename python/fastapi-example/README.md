@@ -44,7 +44,7 @@ This example demonstrates how to integrate the CreoleCentric Text-to-Speech API 
    Edit `.env` and add your API credentials:
    ```env
    CREOLECENTRIC_API_KEY=cc_your_api_key_here
-   CREOLECENTRIC_API_URL=https://creolecentric.com/api/v1
+   CREOLECENTRIC_API_URL=https://api.creolecentric.com/v1
    ```
 
 5. **Run the development server**:
@@ -225,7 +225,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 ```env
 CREOLECENTRIC_API_KEY=cc_your_api_key_here
-CREOLECENTRIC_API_URL=https://creolecentric.com/api/v1
+CREOLECENTRIC_API_URL=https://api.creolecentric.com/v1
 ```
 
 ## Testing

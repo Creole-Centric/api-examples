@@ -8,7 +8,7 @@ Set your API key as an environment variable:
 
 ```bash
 export API_KEY="cc_your_api_key_here"
-export BASE_URL="https://creolecentric.com/api/v1"
+export BASE_URL="https://api.creolecentric.com/v1"
 ```
 
 ## Authentication

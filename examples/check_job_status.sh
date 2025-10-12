@@ -12,7 +12,7 @@
 
 # Configuration
 CREOLECENTRIC_API_KEY="${CREOLECENTRIC_API_KEY:-cc_your_api_key_here}"
-API_BASE_URL="https://creolecentric.com/api/v1"
+API_BASE_URL="https://api.creolecentric.com/v1"
 
 # Check if job ID was provided
 if [ $# -eq 0 ]; then

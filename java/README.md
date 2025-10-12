@@ -253,7 +253,7 @@ CreoleCentricAPI client = new CreoleCentricAPI("cc_your_api_key_here");
 // With custom base URL
 CreoleCentricAPI client = new CreoleCentricAPI(
     "cc_your_api_key_here",
-    "https://creolecentric.com/api/v1"
+    "https://api.creolecentric.com/v1"
 );
 ```
 

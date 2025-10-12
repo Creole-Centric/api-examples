@@ -119,7 +119,7 @@ type CreoleCentricAPI struct {
 }
 
 func NewCreoleCentricAPI(apiKey string, baseURL ...string) *CreoleCentricAPI {
-	url := "https://creolecentric.com/api/v1"
+	url := "https://api.creolecentric.com/v1"
 	if len(baseURL) > 0 {
 		url = strings.TrimSuffix(baseURL[0], "/")
 	}

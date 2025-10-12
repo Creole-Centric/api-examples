@@ -38,7 +38,7 @@ This example demonstrates how to integrate the CreoleCentric Text-to-Speech API 
    <?xml version="1.0" encoding="utf-8"?>
    <resources>
        <string name="creolecentric_api_key">cc_your_api_key_here</string>
-       <string name="creolecentric_api_url">https://creolecentric.com/api/v1</string>
+       <string name="creolecentric_api_url">https://api.creolecentric.com/v1</string>
    </resources>
    ```
 

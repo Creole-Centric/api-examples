@@ -22,7 +22,7 @@ class CreoleCentricAPI
   #
   # @param api_key [String] Your API key starting with 'cc_'
   # @param base_url [String] Base URL for the API (default: production URL)
-  def initialize(api_key, base_url = 'https://creolecentric.com/api/v1')
+  def initialize(api_key, base_url = 'https://api.creolecentric.com/v1')
     @api_key = api_key
     @base_url = base_url.chomp('/')
     @headers = {

@@ -371,7 +371,7 @@ var client = new CreoleCentricAPI("cc_your_api_key_here");
 // With custom base URL
 var client = new CreoleCentricAPI(
     "cc_your_api_key_here",
-    "https://creolecentric.com/api/v1"
+    "https://api.creolecentric.com/v1"
 );
 
 // Don't forget to dispose when done

@@ -30,7 +30,7 @@
 
   const CreoleCentricWidget = {
     config: {
-      apiBaseUrl: 'https://creolecentric.com/api/v1',
+      apiBaseUrl: 'https://api.creolecentric.com/v1',
       wsUrl: 'wss://ws.creolecentric.com',
       containerId: 'creolecentric-tts',
       apiKey: '',

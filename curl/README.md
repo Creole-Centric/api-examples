@@ -54,7 +54,7 @@ Run all examples:
 Or manually:
 
 ```bash
-curl -X GET "https://creolecentric.com/api/v1/health/" \
+curl -X GET "https://api.creolecentric.com/v1/health/" \
   -H "Authorization: ApiKey ${CREOLECENTRIC_API_KEY}" \
   -H "Content-Type: application/json"
 ```
@@ -68,7 +68,7 @@ curl -X GET "https://creolecentric.com/api/v1/health/" \
 Or manually:
 
 ```bash
-curl -X POST "https://creolecentric.com/api/v1/tts/jobs/" \
+curl -X POST "https://api.creolecentric.com/v1/tts/jobs/" \
   -H "Authorization: ApiKey ${CREOLECENTRIC_API_KEY}" \
   -H "Content-Type: application/json" \
   -d '{
@@ -84,7 +84,7 @@ curl -X POST "https://creolecentric.com/api/v1/tts/jobs/" \
 ### Get Credit Balance
 
 ```bash
-curl -X GET "https://creolecentric.com/api/v1/credits/balance/" \
+curl -X GET "https://api.creolecentric.com/v1/credits/balance/" \
   -H "Authorization: ApiKey ${CREOLECENTRIC_API_KEY}" \
   -H "Content-Type: application/json"
 ```
@@ -92,7 +92,7 @@ curl -X GET "https://creolecentric.com/api/v1/credits/balance/" \
 ### List Available Voices
 
 ```bash
-curl -X GET "https://creolecentric.com/api/v1/tts/voices/" \
+curl -X GET "https://api.creolecentric.com/v1/tts/voices/" \
   -H "Authorization: ApiKey ${CREOLECENTRIC_API_KEY}" \
   -H "Content-Type: application/json"
 ```
@@ -101,7 +101,7 @@ curl -X GET "https://creolecentric.com/api/v1/tts/voices/" \
 
 ```bash
 JOB_ID="your-job-id-here"
-curl -X GET "https://creolecentric.com/api/v1/tts/jobs/${JOB_ID}/status/" \
+curl -X GET "https://api.creolecentric.com/v1/tts/jobs/${JOB_ID}/status/" \
   -H "Authorization: ApiKey ${CREOLECENTRIC_API_KEY}" \
   -H "Content-Type: application/json"
 ```
@@ -109,7 +109,7 @@ curl -X GET "https://creolecentric.com/api/v1/tts/jobs/${JOB_ID}/status/" \
 ### List Recent Jobs
 
 ```bash
-curl -X GET "https://creolecentric.com/api/v1/tts/jobs/list/?limit=10&offset=0" \
+curl -X GET "https://api.creolecentric.com/v1/tts/jobs/list/?limit=10&offset=0" \
   -H "Authorization: ApiKey ${CREOLECENTRIC_API_KEY}" \
   -H "Content-Type: application/json"
 ```
@@ -118,7 +118,7 @@ curl -X GET "https://creolecentric.com/api/v1/tts/jobs/list/?limit=10&offset=0" 
 
 ```bash
 JOB_ID="your-job-id-here"
-curl -X POST "https://creolecentric.com/api/v1/tts/jobs/${JOB_ID}/cancel/" \
+curl -X POST "https://api.creolecentric.com/v1/tts/jobs/${JOB_ID}/cancel/" \
   -H "Authorization: ApiKey ${CREOLECENTRIC_API_KEY}" \
   -H "Content-Type: application/json"
 ```
@@ -128,7 +128,7 @@ curl -X POST "https://creolecentric.com/api/v1/tts/jobs/${JOB_ID}/cancel/" \
 To receive real-time updates about your TTS job, include a `webhook_url` when creating the job:
 
 ```bash
-curl -X POST "https://creolecentric.com/api/v1/tts/jobs/" \
+curl -X POST "https://api.creolecentric.com/v1/tts/jobs/" \
   -H "Authorization: ApiKey ${CREOLECENTRIC_API_KEY}" \
   -H "Content-Type: application/json" \
   -d '{
@@ -151,7 +151,7 @@ Your webhook endpoint will receive POST requests for each stage:
 For immediate audio generation of short texts:
 
 ```bash
-curl -X POST "https://creolecentric.com/api/v1/tts/express/" \
+curl -X POST "https://api.creolecentric.com/v1/tts/express/" \
   -H "Authorization: ApiKey ${CREOLECENTRIC_API_KEY}" \
   -H "Content-Type: application/json" \
   -d '{

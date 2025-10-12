@@ -208,7 +208,7 @@ class CreoleCentricAPI {
     private let baseURL: String
     private let session: URLSession
 
-    init(apiKey: String, baseURL: String = "https://creolecentric.com/api/v1") {
+    init(apiKey: String, baseURL: String = "https://api.creolecentric.com/v1") {
         self.apiKey = apiKey
         self.baseURL = baseURL.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
 

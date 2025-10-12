@@ -23,7 +23,7 @@ load_dotenv()
 class CreoleCentricAPI:
     """Client for interacting with CreoleCentric TTS API"""
     
-    def __init__(self, api_key: str, base_url: str = "https://creolecentric.com/api/v1"):
+    def __init__(self, api_key: str, base_url: str = "https://api.creolecentric.com/v1"):
         """
         Initialize the API client.
         

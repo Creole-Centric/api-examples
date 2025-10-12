@@ -141,7 +141,7 @@ public class CreoleCentricAPI {
      * @param apiKey Your CreoleCentric API key (starts with 'cc_')
      */
     public CreoleCentricAPI(String apiKey) {
-        this(apiKey, "https://creolecentric.com/api/v1");
+        this(apiKey, "https://api.creolecentric.com/v1");
     }
 
     /**

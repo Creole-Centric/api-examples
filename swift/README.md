@@ -218,7 +218,7 @@ class TTSViewController: UIViewController {
 ```swift
 let client = CreoleCentricAPI(
     apiKey: "cc_your_key_here",
-    baseURL: "https://creolecentric.com/api/v1"  // Optional
+    baseURL: "https://api.creolecentric.com/v1"  // Optional
 )
 ```
 

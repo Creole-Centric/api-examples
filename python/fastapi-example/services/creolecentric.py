@@ -8,7 +8,7 @@ class CreoleCentricClient:
 
     def __init__(self):
         self.api_key = os.getenv('CREOLECENTRIC_API_KEY')
-        self.base_url = os.getenv('CREOLECENTRIC_API_URL', 'https://creolecentric.com/api/v1').rstrip('/')
+        self.base_url = os.getenv('CREOLECENTRIC_API_URL', 'https://api.creolecentric.com/v1').rstrip('/')
         self.headers = {
             "Authorization": f"ApiKey {self.api_key}",
             "Content-Type": "application/json"

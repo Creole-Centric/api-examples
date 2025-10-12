@@ -35,13 +35,13 @@ This example demonstrates how to integrate the CreoleCentric Text-to-Speech API 
    ```properties
    server.port=8080
    creolecentric.api.key=cc_your_api_key_here
-   creolecentric.api.url=https://creolecentric.com/api/v1
+   creolecentric.api.url=https://api.creolecentric.com/v1
    ```
 
    Or use environment variables:
    ```bash
    export CREOLECENTRIC_API_KEY=cc_your_api_key_here
-   export CREOLECENTRIC_API_URL=https://creolecentric.com/api/v1
+   export CREOLECENTRIC_API_URL=https://api.creolecentric.com/v1
    ```
 
 4. **Run the application**:
@@ -220,7 +220,7 @@ ENTRYPOINT ["java","-jar","/app.jar"]
 docker build -t creolecentric-tts .
 docker run -p 8080:8080 \
   -e CREOLECENTRIC_API_KEY=your_key \
-  -e CREOLECENTRIC_API_URL=https://creolecentric.com/api/v1 \
+  -e CREOLECENTRIC_API_URL=https://api.creolecentric.com/v1 \
   creolecentric-tts
 ```
 
@@ -234,7 +234,7 @@ server.port=8080
 
 # CreoleCentric API
 creolecentric.api.key=${CREOLECENTRIC_API_KEY:cc_your_api_key_here}
-creolecentric.api.url=${CREOLECENTRIC_API_URL:https://creolecentric.com/api/v1}
+creolecentric.api.url=${CREOLECENTRIC_API_URL:https://api.creolecentric.com/v1}
 
 # Logging
 logging.level.com.creolecentric=DEBUG

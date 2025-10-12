@@ -19,7 +19,7 @@ class CreoleCentricAPI {
      * @param {string} apiKey - Your API key starting with 'cc_'
      * @param {string} baseUrl - Base URL for the API
      */
-    constructor(apiKey, baseUrl = 'https://creolecentric.com/api/v1') {
+    constructor(apiKey, baseUrl = 'https://api.creolecentric.com/v1') {
         this.apiKey = apiKey;
         this.baseUrl = baseUrl.replace(/\/$/, '');
         

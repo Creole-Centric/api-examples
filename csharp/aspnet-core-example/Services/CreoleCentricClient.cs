@@ -14,7 +14,7 @@ public class CreoleCentricClient
     public CreoleCentricClient(IConfiguration configuration)
     {
         _apiKey = configuration["CreoleCentric:ApiKey"] ?? throw new InvalidOperationException("API key not configured");
-        _baseUrl = configuration["CreoleCentric:ApiUrl"] ?? "https://creolecentric.com/api/v1";
+        _baseUrl = configuration["CreoleCentric:ApiUrl"] ?? "https://api.creolecentric.com/v1";
 
         _httpClient = new HttpClient
         {

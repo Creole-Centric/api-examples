@@ -18,7 +18,7 @@ def test_api_connection():
     
     # Get API key
     api_key = os.getenv("CREOLECENTRIC_API_KEY")
-    base_url = os.getenv("CREOLECENTRIC_API_URL", "https://creolecentric.com/api/v1")
+    base_url = os.getenv("CREOLECENTRIC_API_URL", "https://api.creolecentric.com/v1")
     
     if not api_key:
         print("❌ Error: CREOLECENTRIC_API_KEY not set")

@@ -164,7 +164,7 @@ xcodebuild test -project CreoleCentricExample.xcodeproj \
 struct CreoleCentricConfig {
     static let apiKey = ProcessInfo.processInfo.environment["CREOLECENTRIC_API_KEY"]
                         ?? "cc_your_api_key_here"
-    static let apiUrl = "https://creolecentric.com/api/v1"
+    static let apiUrl = "https://api.creolecentric.com/v1"
 }
 ```
 
