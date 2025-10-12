@@ -1,0 +1,15 @@
+{
+    "name": "creolecentric/api-client-php",
+    "description": "CreoleCentric TTS API Client for PHP",
+    "type": "library",
+    "require": {
+        "php": ">=7.4",
+        "guzzlehttp/guzzle": "^7.0",
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "autoload": {
+        "classmap": [
+            "CreoleCentricAPI.php"
+        ]
+    }
+}
