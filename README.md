@@ -12,6 +12,7 @@ This repository contains example client code for the CreoleCentric Text-to-Speec
 - ✅ **Swift/SwiftUI** - Native iOS/macOS implementation with async/await, SwiftUI & UIKit examples
 - ✅ **Java** - Java 11+ implementation with Maven/Gradle support, Spring Boot & Android examples
 - ✅ **C#/.NET** - .NET 6.0+ implementation with ASP.NET Core, Blazor, MAUI & Xamarin examples
+- ✅ **Live Streaming TTS** - Low-latency SSE streaming (Python + Node.js + cURL) for voice agents and real-time playback
 
 ## Quick Start
 
@@ -88,6 +89,29 @@ export CREOLECENTRIC_API_KEY='cc_your_key_here'  # Linux/macOS
 set CREOLECENTRIC_API_KEY=cc_your_key_here       # Windows CMD
 dotnet run
 ```
+
+### Live Streaming TTS (Server-Sent Events)
+
+For low-latency playback — voice agents, phone bots, real-time apps —
+use the streaming endpoint instead of the regular `/tts/jobs/` flow.
+First audio byte typically lands in under 100 ms; the response body
+is a stream of base64-encoded 24 kHz mono 16-bit PCM chunks ending
+with a `done` event that carries the saved S3 audio URL.
+
+```bash
+# Python
+cd python/streaming-example && pip install -r requirements.txt && python streaming_tts.py
+
+# Node.js (requires Node 18+)
+cd javascript/streaming-example && npm install && npm start
+
+# cURL
+./curl/03-streaming-tts.sh
+```
+
+Each example writes a standard WAV file (`output.wav`) from the
+streamed PCM. See the language-specific READMEs for billing details,
+cancellation semantics, and the full SSE event schema.
 
 ## Getting Your API Key
 

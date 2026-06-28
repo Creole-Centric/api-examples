@@ -1,0 +1,16 @@
+{
+  "name": "creolecentric-streaming-tts-example",
+  "version": "1.0.0",
+  "description": "Live-streaming TTS example for the CreoleCentric API (Node.js + native fetch)",
+  "type": "module",
+  "main": "streaming-tts.js",
+  "scripts": {
+    "start": "node streaming-tts.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
