@@ -2,7 +2,7 @@
 
 Practical notes for wiring the CreoleCentric Live Streaming TTS endpoint into a Telnyx voice deployment (Programmable Voice, Media Streaming, or the AI Assistant framework). The Python sample in this directory (`streaming_tts.py`) consumes the SSE stream into a list of PCM chunks; this doc covers what you do with those chunks on the Telnyx side.
 
-If you ship a working integration based on these notes, we'd love to upstream it as the official `python/telnyx-example/` in this repo — open an issue or PR and we'll credit your team.
+If anything in these notes is unclear, you hit an integration issue we should help debug, or you discover a gotcha we should add — reach out at `support@creolecentric.com`. We care about whether your deployment ships successfully.
 
 ## Audio format crash-course
 
