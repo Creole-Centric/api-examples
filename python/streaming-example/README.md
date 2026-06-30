@@ -15,6 +15,10 @@ Use streaming when you need low-latency playback (live voice agents,
 phone bots, real-time interactive apps). For batch jobs, use the
 regular [`/v1/tts/jobs/`](../requests-example/) endpoint instead.
 
+> **Wiring this into Telnyx?** See [telnyx-integration.md](./telnyx-integration.md)
+> for audio-format conversion (24 kHz PCM → µ-law 8 kHz or L16 16 kHz),
+> buffering strategy, and the gotchas list.
+
 ## Setup
 
 ```bash
@@ -54,23 +58,25 @@ the regular `/v1/tts/jobs/` endpoint for those requests.
 ## Billing
 
 **1.5x the standard per-character rate** (same premium as Express
-mode). Cancelling mid-stream refunds credits **proportional to the
-audio not yet delivered** — partially-streamed audio is billed at
-the regular streaming rate, so cancels can't be used to get free
-synthesis.
+mode). Cancelling at any point before the stream finishes refunds
+the credits in full — no `audio_url` is finalized for a cancelled
+stream, so there is nothing to bill.
 
-| Scenario | Refund |
+| Scenario | Charge |
 |---|---|
-| Cancel before first chunk | 100% |
-| Cancel mid-stream | proportional to audio not yet sent |
-| Stream completes normally | 0% (audio delivered, full charge) |
+| Cancel any time before the `done` event | **0%** (full refund) |
+| Stream completes through `done` | full charge (audio_url is yours) |
+
+Cancels cannot be used to get free synthesis — once the `done`
+event is emitted and the `audio_url` is persisted, disconnecting
+is a no-op (no refund).
 
 ## Cancellation
 
 Close the HTTP connection (the `with requests.post(...) as resp:`
 block exits early on exception or break). The server detects the
 disconnect via Daphne's `GeneratorExit`, marks the job cancelled,
-and applies the proportional refund.
+and refunds the credits in full.
 
 For a graceful explicit cancel, POST to `/v1/tts/jobs/<job_id>/cancel-stream/`
 with a session JWT — the streaming generator picks up the cancel
