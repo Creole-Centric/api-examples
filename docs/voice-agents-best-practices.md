@@ -131,6 +131,43 @@ the payload.
   users may walk away and return; shorter for high-turnover
   kiosks.
 
+### 1.7 Public vs. private agents
+
+The `is_public` field controls **who can start a session against
+your agent** — it's the authentication boundary at conversation
+start, not a visibility or quality setting. Voice, LLM behavior,
+and credit rates are identical either way.
+
+|  | `is_public: true` | `is_public: false` |
+|---|---|---|
+| Who can invoke it? | Anyone with the agent_id | Only the owner (JWT or API key) |
+| Widget on a public marketing site? | Works | Doesn't work (widget can't auth) |
+| Bot-attack risk on your credit balance | High — anyone can open sessions | None — no unauth callers |
+| Typical use case | Consumer support, FAQ, prospect chat | Employee tools, logged-in customer flows |
+
+**`is_public: true`** — the `agent_id` alone is enough to open a
+session. Your credit balance pays for every turn regardless of
+who's talking. Right for consumer-facing widgets, FAQ bots, and
+prospect engagement where you don't want to force sign-in.
+
+**`is_public: false`** — session-start requires an authenticated
+request that resolves to the agent's owner (JWT or an API key
+with the `agent` scope). The widget alone can't reach a private
+agent — its session-start POST carries no credentials. If you
+want widget-style embedding for a private agent, your backend
+generates a short-lived session token first and hands it to the
+widget. Right for internal tools, employee-only agents, and flows
+scoped to logged-in customers of your own product.
+
+**Cost-exposure caveat for public agents.** There's no per-agent
+rate limit yet (roadmap item — see §2.7 for full details). A bot
+campaign against a public agent can open unlimited sessions and
+burn your provider budget (BYO) or credits (CC) in hours.
+Mitigate with a CAPTCHA / turnstile in front of the widget button,
+a provider-side spending cap, and — if the concern outweighs the
+signup friction — flipping to `is_public: false` with session
+tokens issued from your own authenticated backend.
+
 ---
 
 ## 2. Security considerations
