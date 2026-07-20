@@ -13,6 +13,7 @@ This repository contains example client code for the CreoleCentric Text-to-Speec
 - ✅ **Java** - Java 11+ implementation with Maven/Gradle support, Spring Boot & Android examples
 - ✅ **C#/.NET** - .NET 6.0+ implementation with ASP.NET Core, Blazor, MAUI & Xamarin examples
 - ✅ **Live Streaming TTS** - Low-latency SSE streaming (Python + Node.js + cURL) for voice agents and real-time playback
+- ✅ **Voice Agents** - Kreyòl-speaking voice agents on your site. Widget embed HTML + agent-create curl + HMAC-verified webhook handlers for tools + escalation. See [`examples/voice-agents/`](examples/voice-agents/) and the [Best Practices & Security Guide](docs/voice-agents-best-practices.md).
 
 ## Quick Start
 

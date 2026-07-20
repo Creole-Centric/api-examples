@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Voice Agent — Widget Embed Example</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 720px;
+      margin: 3em auto;
+      padding: 0 1em;
+      color: #222;
+      line-height: 1.6;
+    }
+    h1 { color: #059669; }
+    code {
+      background: #f3f4f6;
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    .note {
+      background: #f0fdf4;
+      border-left: 4px solid #10b981;
+      padding: 0.8em 1em;
+      border-radius: 4px;
+      margin: 1em 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Voice Agent — Widget Embed</h1>
+
+  <p>
+    This is the minimum HTML you need to embed a CreoleCentric Voice
+    Agent on any web page. Save this file, replace <code>YOUR_AGENT_ID</code>
+    with the agent ID you got from <code>create-agent.sh</code>, and open
+    the file in a browser.
+  </p>
+
+  <p>
+    Look for the floating <strong>Voice chat</strong> button in the
+    bottom-right corner. Click it, grant microphone permission, and
+    start talking.
+  </p>
+
+  <div class="note">
+    <strong>Public agent required.</strong> The widget will only work
+    for anonymous visitors if your agent was created with
+    <code>is_public: true</code>. If you need authenticated-caller flows,
+    generate a session token from your backend and use the widget's
+    programmatic API instead — see the
+    <a href="https://creolecentric.com/docs/voice-agents">docs</a>.
+  </div>
+
+  <h2>Configuration options</h2>
+
+  <p>The following <code>data-*</code> attributes on the script tag customize the widget:</p>
+
+  <ul>
+    <li><code>data-agent-id</code> — required. The agent ID.</li>
+    <li><code>data-theme</code> — <code>light</code> or <code>dark</code>. Default <code>light</code>.</li>
+    <li><code>data-position</code> — <code>bottom-right</code>, <code>bottom-left</code>, <code>top-right</code>, <code>top-left</code>. Default <code>bottom-right</code>.</li>
+    <li><code>data-greeting</code> — text shown at the top of the panel. Default "Voice chat".</li>
+  </ul>
+
+  <h2>Content Security Policy</h2>
+
+  <p>If your site sets a CSP, add these directives:</p>
+
+  <pre>script-src 'self' https://creolecentric.com;
+connect-src 'self' https://creolecentric.com wss://creolecentric.com;
+media-src 'self' blob:;</pre>
+
+  <!-- ===================================================================
+       This is the only line that matters.
+       Replace YOUR_AGENT_ID with the ID returned by create-agent.sh.
+       =================================================================== -->
+  <script src="https://creolecentric.com/widget/v1/widget.js"
+          data-agent-id="YOUR_AGENT_ID"
+          data-theme="light"
+          data-position="bottom-right"
+          data-greeting="How can I help?"
+          async></script>
+</body>
+</html>
