@@ -82,7 +82,7 @@ Before pointing real traffic at your agent:
 
 - **BYO LLM key handling** — [best-practices §2.1](../../docs/voice-agents-best-practices.md#21-byo-llm-keys--what-you-should-do). Dedicated key, project scoping, spending cap, rotation.
 - **HMAC verification is mandatory** — [best-practices §2.4](../../docs/voice-agents-best-practices.md#24-webhook-tool-hmac-verification-non-negotiable). The example webhook code shows the pattern; don't skip it.
-- **Rate-limit exposure** — [best-practices §2.7](../../docs/voice-agents-best-practices.md#27-rate-limiting--cost-controls). We don't currently rate-limit per-agent sessions; if your agent is `is_public=true` on an unauthenticated site, put a CAPTCHA in front of the widget.
+- **Rate-limit exposure** — [best-practices §2.7](../../docs/voice-agents-best-practices.md#27-rate-limiting--cost-controls). Public agents are throttled at 100 anonymous sessions/hour per agent (429 with `Retry-After`); owner + authed callers bypass. That caps worst-case abuse but doesn't zero it — layer a CAPTCHA in front of the widget for high-value or Advanced-tier agents.
 
 ## Getting help
 

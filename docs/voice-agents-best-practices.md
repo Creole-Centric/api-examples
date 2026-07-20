@@ -124,8 +124,14 @@ the payload.
 
 - `max_turns_per_session` — cap based on the use case. Support
   bots: 15–20. Appointment booking: 8–12. FAQ: 5. This bounds the
-  credit reservation math (20 turns × ~500 credits ≈ 10K reserved
-  at session start).
+  credit reservation math, which is tier-aware:
+  - Standard tier (Gemini 2.5 Flash): ~105 credits/turn → 20 turns
+    reserves ~2.1K per session.
+  - Advanced tier (Gemini 2.5 Pro): ~1,265 credits/turn → 20 turns
+    reserves ~25K per session.
+  Pick `max_turns_per_session` deliberately if you're on Advanced —
+  it's the main lever that keeps a single stuck conversation from
+  reserving a big chunk of your balance.
 - `session_ttl_seconds` — how long the session-scoped API key
   remains valid. Default 3600 (1 hour). Longer for use cases where
   users may walk away and return; shorter for high-turnover
@@ -159,14 +165,15 @@ generates a short-lived session token first and hands it to the
 widget. Right for internal tools, employee-only agents, and flows
 scoped to logged-in customers of your own product.
 
-**Cost-exposure caveat for public agents.** There's no per-agent
-rate limit yet (roadmap item — see §2.7 for full details). A bot
-campaign against a public agent can open unlimited sessions and
-burn your provider budget (BYO) or credits (CC) in hours.
-Mitigate with a CAPTCHA / turnstile in front of the widget button,
-a provider-side spending cap, and — if the concern outweighs the
-signup friction — flipping to `is_public: false` with session
-tokens issued from your own authenticated backend.
+**Cost-exposure caveat for public agents.** Public agents are
+throttled at **100 anonymous sessions/hour per agent** (see §2.7).
+That caps the worst case, but 100/hr can still burn real money on
+Advanced tier (~25K credits per session × 100 = 2.5M credits/hr in
+the peak-abuse scenario). Layer additional defenses in front of
+the widget: a CAPTCHA / turnstile, a provider-side spending cap,
+and — if the concern outweighs the signup friction — flipping to
+`is_public: false` with session tokens issued from your own
+authenticated backend.
 
 ---
 
@@ -343,21 +350,36 @@ this:
 
 ### 2.7 Rate limiting + cost controls
 
-Per-agent controls to configure:
+Layered defenses, cheapest first:
 
 - `max_turns_per_session` bounds a single conversation's cost.
 - Credit reservation at session start blocks new sessions when
-  your account balance is low.
+  your account balance is low. Reservation is tier-aware — see
+  §1.6 for the per-turn numbers.
+- **Per-agent throttle:** public agents are capped at **100
+  anonymous sessions/hour per agent**. The 101st unauthenticated
+  session-start returns `429 Too Many Requests` with a
+  `Retry-After` header (seconds until the window resets). The
+  owner and authenticated collaborators bypass the throttle —
+  their sessions bill their own account, so there's no abuse
+  vector to protect against. The cap is a hard block against
+  runaway bot campaigns, not fine-grained rate control.
 - Provider-side spending cap (BYO mode) is the final backstop.
-- **We don't currently rate-limit per-agent sessions/hour** — a
-  bot attacker could open unlimited sessions. If your agent is
-  public + widget-embed on an unauthenticated site, mitigate
-  with:
-  - CAPTCHA or turnstile before showing the widget button.
-  - Origin-header check on your side (we accept any origin for
-    the widget; enforce your own).
-  - Consider making the agent `is_public=false` and issuing
-    session tokens from your authenticated backend.
+
+If 100/hr is still too high for your public widget's tier + cost
+profile — Advanced tier can reach ~2.5M credits/hr at saturation —
+add front-of-widget mitigations:
+
+- CAPTCHA or turnstile before showing the widget button.
+- Origin-header check on your side (we accept any origin for the
+  widget; enforce your own).
+- Flip to `is_public=false` and issue session tokens from your
+  authenticated backend.
+
+**Handling 429 on the client.** When session-start returns 429,
+show a "please try again in a few minutes" message and back off
+by at least the `Retry-After` seconds. Don't hot-loop retries —
+you'll just keep hitting the throttle and never make progress.
 
 ---
 
