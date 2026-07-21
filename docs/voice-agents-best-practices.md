@@ -334,19 +334,29 @@ widget only ever sees session keys.
 
 ### 2.6 PII in transcripts
 
-`AgentTurn` rows preserve the raw user transcript and agent
-response text indefinitely (Phase 2 has no retention policy). If
-your domain has PII exposure — health, finance, legal — plan for
-this:
+Three independent knobs govern what sensitive content survives on
+our side and for how long. All three are per-agent and opt-in;
+defaults preserve backwards compatibility with pre-compliance
+agents. See §6.4–6.7 for endpoint mechanics.
 
-- **Product roadmap:** Per-agent retention policy + PII redaction
-  is Phase 3 work; not available yet.
-- **Interim mitigation:** Instruct the LLM in the system prompt
-  to never include SSN / DOB / account numbers verbatim in its
-  response. Not bulletproof, but reduces surface area.
-- **Documentation duty:** If you're in a regulated industry, you
-  need your own retention + deletion policy for the transcripts
-  you access via our API, independent of ours.
+- **Transcript retention** (`transcript_retention_days`, default
+  Never). Set to 30 / 90 / 365 days to auto-purge `AgentTurn`
+  transcript rows past that window. Session metadata + credit
+  records are always kept (regulatory-safe, needed for billing).
+- **PII redaction** (`pii_redaction_config`, default off). Enable
+  a starter pack of regex patterns — SSN, phone, email, credit
+  card, DOB, account number — that scrub matches before the
+  transcript hits the DB. Raw values *never* touch storage when
+  enabled. Patterns lean strict to avoid destroying legitimate
+  content; false negatives are OK, false positives aren't.
+- **Belt-and-braces prompt guidance.** Also instruct the LLM in
+  the system prompt to avoid emitting sensitive content verbatim
+  in its responses. Redaction runs post-hoc; prompt discipline
+  reduces the surface the redactor has to catch.
+
+You still need your own downstream retention + deletion policy
+for anything you *pull* out via `/turns/` or `/audit-log/` and
+archive on your side.
 
 ### 2.7 Rate limiting + cost controls
 
@@ -408,6 +418,15 @@ Run through this before pointing real traffic at the agent.
   - How to check per-agent credit spend
 - [ ] Turn-log audit sample reviewed — you confirm the transcripts
   look right and there's no unexpected PII leaking into responses.
+- [ ] `transcript_retention_days` set to a compliant window (30 /
+  90 / 365), or explicitly kept at Never with sign-off (§6.4).
+- [ ] `pii_redaction_config` reviewed against your data classes —
+  patterns enabled OR a documented decision that none apply (§6.5).
+- [ ] If `record_audio: true`, a caller-notification line is in
+  the system prompt AND legal / privacy has signed off on
+  jurisdictional consent requirements (§6.6).
+- [ ] Audit log spot-checked — you confirm the events you care
+  about are landing and the CSV export works (§6.7).
 
 ---
 
@@ -518,6 +537,85 @@ tool calls, and any error codes.
 
 The web UI renders this inline on the agent's edit page; the API is
 what you'd use to feed your own BI dashboard or alerting.
+
+### 6.4 Transcript retention policy
+
+Set `transcript_retention_days` on the agent to auto-purge
+`AgentTurn` transcript rows past a fixed window:
+
+- `0` — never purge (default; matches pre-compliance behavior).
+- `30` / `90` / `365` — daily purge job (03:30 UTC) deletes any
+  row whose `created_at` is older than the retention window.
+
+Session-level metadata (start time, credit totals, tool calls)
+is retained regardless — regulators care about auditability of
+what happened, not the content of what was said. The purge writes
+a `transcripts_purged` audit row per agent whose data it touched
+so you can point at a record of the deletion.
+
+### 6.5 PII redaction
+
+Set `pii_redaction_config` on the agent to strip sensitive matches
+from transcripts *before* they hit the database. Shape:
+
+```json
+{
+  "enabled": true,
+  "patterns": ["ssn", "phone", "email", "credit_card", "dob", "account_number"]
+}
+```
+
+Each match is replaced with a bracketed placeholder
+(e.g. `[REDACTED_SSN]`, `[REDACTED_PHONE]`) so the transcript
+stays human-readable for context while the raw value is gone.
+Unknown pattern keys are rejected with 400. Templates that ship
+for regulated domains (Insurance customer service, Appointment
+booking) seed sensible defaults; you can strip them on import if
+you'd rather start from scratch.
+
+The runtime applies redaction to both `user_transcript` and
+`llm_response_text` at write time — no backfill needed for future
+turns, but existing rows created before you enabled redaction
+still carry raw content until the retention TTL sweeps them.
+
+### 6.6 Call recording (opt-in)
+
+Set `record_audio: true` on the agent to store a mixed mono
+16 kHz WAV of each session to private S3. The recording captures
+both directions of the conversation in call order.
+
+- Playback: `GET /v1/agents/sessions/<session_id>/recording-url/`
+  returns a **5-minute signed URL** — enough time for the caller
+  to hit Play, short enough that leaked URLs don't stay live.
+- Storage: recordings share the `transcript_retention_days`
+  window. The purge job deletes expired recordings from S3 and
+  clears the `recording_s3_key` on the session row.
+- **You are responsible for informing callers that calls are
+  being recorded.** Add a notice to the system prompt (e.g. the
+  first agent utterance) — every jurisdiction has its own
+  consent requirements.
+
+Sessions with an available recording surface as `has_recording:
+true` in the `/sessions-list/` response; the web UI renders a Play
+button on the sessions tab.
+
+### 6.7 Audit log
+
+`GET /v1/agents/<id>/audit-log/` returns a queryable, exportable
+record of every mutating action for one agent — agent CRUD, tool
+CRUD, session start / end, escalations, config imports / exports,
+and transcript purges. Never carries transcript content.
+
+Query params:
+- `limit` (default 200, max 1000)
+- `event_type=agent_updated,session_started` — comma-separated
+  filter
+- `as=csv` — returns `text/csv` attachment for handing to auditors
+
+Every event carries the actor username (or null for anonymous
+public-agent sessions), a UTC timestamp, and an event-specific
+metadata dict (e.g. `changed_fields` for updates, `session_id` +
+`ip_hash` for session starts, `turns_deleted` for purges).
 
 ---
 
