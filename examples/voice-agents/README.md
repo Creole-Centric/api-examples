@@ -26,7 +26,19 @@ Voice Agent. Start with the docs:
    [`/voices`](https://creolecentric.com/voices) — the agent
    voice picker only shows Studio Pro voices.
 
-3. **Create an agent**:
+3. **Create an agent** (from scratch or from a template):
+
+   The web dashboard offers four prebuilt templates — Insurance
+   customer service, Appointment booking, FAQ, and Restaurant
+   ordering — each with a working Kreyòl system prompt and any
+   webhook tools the archetype needs. The picker lives on
+   [`/agents/new`](https://creolecentric.com/agents/new). From the
+   API, `GET /v1/agents/templates/` returns the same list; feed a
+   template's `agent` config to `POST /v1/agents/` (after picking a
+   voice) and its `tools` list to `POST /v1/agents/<id>/tools/`.
+   See best-practices §6.1.
+
+   To build one from scratch:
    ```bash
    cd examples/voice-agents
    export CREOLECENTRIC_API_KEY=cc_your_key_here

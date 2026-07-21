@@ -454,7 +454,74 @@ Instrument at least these three signals in the first two weeks:
 
 ---
 
-## 6. Getting help
+## 6. Managing agents
+
+Three endpoints round out the day-to-day management workflow that
+sits alongside CRUD on `/v1/agents/`. All three are owner-only and
+require `Authorization: Bearer <JWT>` or `Authorization: ApiKey
+<key>` on your key with the `agent` scope.
+
+### 6.1 Prebuilt templates
+
+`GET /v1/agents/templates/` returns four starter configs — Insurance
+customer service, Appointment booking, FAQ, and Restaurant ordering —
+each with a working Kreyòl system prompt plus any tools the archetype
+needs (webhook URLs shipped as `https://REPLACE_ME.example.com/...`
+placeholders you swap for your own). The templates are pure JSON in
+the same shape as the export endpoint's response, so anything you can
+do with an export payload you can do with a template.
+
+The web UI at `/agents/new` shows the templates as a card grid; the
+API surface lets you script the same thing (fetch templates, pick
+one, POST to `/v1/agents/` with your chosen voice, then POST each
+tool to `/v1/agents/<id>/tools/`).
+
+### 6.2 Config export + import
+
+`GET /v1/agents/<id>/export/` returns the agent's config plus all
+active tools as a JSON blob. `POST /v1/agents/import/` takes that
+same blob (wrapped as `{"config": {...}, "llm_api_key": "..."}`) and
+creates a **new agent** — fresh `agent_id`, fresh tool signing
+secrets. Nothing is ever overwritten by an import.
+
+What travels:
+- Every field on the agent config (name, prompt, voice, LLM config,
+  escalation, throttling, `is_public`, etc.).
+- Every active tool: name, description, JSON Schema, webhook URL,
+  timeout.
+
+What doesn't:
+- BYO `api_key` — never included in the export. Supply it in
+  `llm_api_key` at import time (the import call rejects with 400 if
+  it's missing on a BYO config).
+- Tool `webhook_signing_secret` — regenerated on import. The
+  response body carries each fresh secret exactly once; save them
+  before the response closes or you'll need to rotate the tool.
+
+Use cases: archive agent config in git, promote from staging to
+prod, hand a working starting point to a colleague, snapshot before
+a risky change.
+
+### 6.3 Session history
+
+`GET /v1/agents/<id>/sessions-list/?limit=25` returns the most
+recent sessions for an agent (max 100 per call) with per-session
+duration, turn count, credits used, status, and an `escalated`
+boolean rolled up over the session's turns. The response also
+carries window aggregates (`count`, `escalation_rate`,
+`total_credits_used`) suitable for at-a-glance dashboards.
+
+Drill into a specific session's transcript with the existing
+`GET /v1/agents/sessions/<session_id>/turns/` endpoint — per-turn
+credits, latencies (STT / LLM / TTS / total), user + agent text,
+tool calls, and any error codes.
+
+The web UI renders this inline on the agent's edit page; the API is
+what you'd use to feed your own BI dashboard or alerting.
+
+---
+
+## 7. Getting help
 
 Free-tier support: [support@creolecentric.com](mailto:support@creolecentric.com).
 Two-business-day response for scoping.
