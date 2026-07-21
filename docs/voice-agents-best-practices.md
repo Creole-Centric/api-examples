@@ -466,7 +466,7 @@ require `Authorization: Bearer <JWT>` or `Authorization: ApiKey
 `GET /v1/agents/templates/` returns four starter configs — Insurance
 customer service, Appointment booking, FAQ, and Restaurant ordering —
 each with a working Kreyòl system prompt plus any tools the archetype
-needs (webhook URLs shipped as `https://REPLACE_ME.example.com/...`
+needs (webhook URLs shipped as `https://replace-me.example.com/...`
 placeholders you swap for your own). The templates are pure JSON in
 the same shape as the export endpoint's response, so anything you can
 do with an export payload you can do with a template.
